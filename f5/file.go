@@ -13,7 +13,11 @@ type F5Object interface {
 }
 
 type f5config map[string]F5Object
-type F5Config map[string]f5config
+type F5Config struct {
+	LtmNode    f5config
+	LtmPool    f5config
+	LtmVirtual f5config
+}
 
 func newConfigOject(data []string) (ret F5Config) {
 	// kw := strings.Fields(data[0])
@@ -156,9 +160,9 @@ func ParseFile(file string) (cfg F5Config, err error) {
 	pc, err := parseLines(string(content))
 
 	cfg = F5Config{
-		"ltm node":    f5config{},
-		"ltm virtual": f5config{},
-		"ltm pool":    f5config{},
+		LtmNode:    f5config{},
+		LtmVirtual: f5config{},
+		LtmPool:    f5config{},
 	}
 
 	nodes := 0
@@ -175,7 +179,7 @@ func ParseFile(file string) (cfg F5Config, err error) {
 				fmt.Printf("Err: %s: %s\n", o.Content[0], e)
 				continue
 			}
-			cfg["ltm node"][obj.Name] = obj
+			cfg.LtmNode[obj.Name] = obj
 			_ = obj
 			nodes += 1
 		case strings.HasPrefix(o.Content[0], "ltm pool "):
@@ -184,7 +188,7 @@ func ParseFile(file string) (cfg F5Config, err error) {
 				fmt.Printf("Err: %s: %s\n", o.Content[0], e)
 				continue
 			}
-			cfg["ltm pool"][obj.Name] = obj
+			cfg.LtmPool[obj.Name] = obj
 			_ = obj
 			pools += 1
 		case strings.HasPrefix(o.Content[0], "ltm virtual "):
@@ -193,7 +197,7 @@ func ParseFile(file string) (cfg F5Config, err error) {
 				fmt.Printf("Err: %s: %s\n", o.Content[0], e)
 				continue
 			}
-			cfg["ltm virtual"][obj.Name] = obj
+			cfg.LtmVirtual[obj.Name] = obj
 			_ = obj
 			virtuals += 1
 		}
