@@ -1,6 +1,8 @@
 package f5
 
 import (
+	"strings"
+
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
@@ -73,10 +75,11 @@ type LtmVirtualSourceAddressTranslation struct {
 }
 
 // newLtmVirtual parses data and creates a new LtmVirtual struct.
-func newLtmVirtual(data string) (ret *LtmVirtual, err error) {
+func newLtmVirtual(data ParsedConfig) (ret *LtmVirtual, err error) {
+	o := strings.Join(data.Content, "\n")
 	ret = &LtmVirtual{}
-	err = parseString("", data, ret)
-	ret.original = data
+	err = parseString("", o, ret)
+	ret.original = o
 	return
 }
 
