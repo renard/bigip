@@ -6,7 +6,7 @@ import (
 
 // See https://clouddocs.f5.com/cli/tmsh-reference/latest/modules/ltm/ltm_node.html
 type LtmNode struct {
-	original        string
+	OriginalConfig  ParsedConfig
 	Pos             lexer.Position
 	Name            string       `"ltm" "node" ( @F5Name | @QF5Name ) "{"`
 	Description     string       `( "description" @( QString | Ident )`
@@ -20,8 +20,8 @@ type LtmNode struct {
 	Monitor         string       ` | "monitor" @( "none" | @F5Name | @QF5Name )`
 	RateLimit       int          ` | "rate-limit" @Ident`
 	Ratio           int          ` | "ratio" @Ident`
-	Session         string       ` | @( "user-enabled" | "user-disabled")`
-	State           string       ` | @( "user-up" | "user-down" ) )* "}"`
+	Session         string       ` | "session" @( "user-enabled" | "user-disabled")`
+	State           string       ` | "state" @( "user-up" | "user-down" ) )* "}"`
 }
 
 type LtmNodeFQDN struct {
@@ -36,10 +36,10 @@ type LtmNodeFQDN struct {
 func newLtmNode(data ParsedConfig) (ret *LtmNode, err error) {
 	ret = &LtmNode{}
 	err = parseString("", data.Content, ret)
-	ret.original = data.Content
+	ret.OriginalConfig = data
 	return
 }
 
 func (o *LtmNode) Original() string {
-	return o.original
+	return o.OriginalConfig.Content
 }

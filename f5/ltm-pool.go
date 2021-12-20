@@ -6,7 +6,7 @@ import (
 
 // See https://clouddocs.f5.com/cli/tmsh-reference/latest/modules/ltm/ltm_pool.html
 type LtmPool struct {
-	original               string
+	OriginalConfig         ParsedConfig
 	Pos                    lexer.Position
 	Name                   string           `"ltm" "pool" ( @F5Name | @QF5Name ) "{"`
 	AllowNat               string           `(  "allow-nat" @( "yes" | "no" )`
@@ -59,10 +59,10 @@ type LtmPoolFQDN struct {
 func newLtmPool(data ParsedConfig) (ret *LtmPool, err error) {
 	ret = &LtmPool{}
 	err = parseString("", data.Content, ret)
-	ret.original = data.Content
+	ret.OriginalConfig = data
 	return
 }
 
 func (o *LtmPool) Original() string {
-	return o.original
+	return o.OriginalConfig.Content
 }

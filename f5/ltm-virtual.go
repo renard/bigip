@@ -6,7 +6,7 @@ import (
 
 // See https://clouddocs.f5.com/cli/tmsh-reference/latest/modules/ltm/ltm_virtual.html
 type LtmVirtual struct {
-	original                 string
+	OriginalConfig           ParsedConfig
 	Pos                      lexer.Position
 	Name                     string                                `"ltm" "virtual" ( @F5Name | @QF5Name ) "{"`
 	Description              string                                `( "description" @( QString | Ident )`
@@ -33,6 +33,7 @@ type LtmVirtual struct {
 	SourceAddressTranslation []*LtmVirtualSourceAddressTranslation ` | "source-address-translation" "{" @@ "}"`
 	TranslateAddress         string                                ` | "translate-address" @( "enabled" | "disabled")`
 	TranslatePort            string                                ` | "translate-port" @( "enabled" | "disabled")`
+	Metadata                 []*LtmVirtualMetadata                 ` | "metadata" "{" @@* "}"`
 	// Address         string          ` | "address" @Ident`
 	// ConnectionLimit int             ` | "connection-limit" @Ident`
 	// Status          string          ` | @( "up" | "down" )`
@@ -46,6 +47,12 @@ type LtmVirtual struct {
 	CreationTime     string ` | "creation-time" @F5Time`
 	LastModifiedTime string ` | "last-modified-time" @F5Time )* "}"`
 	// State string ` | @( "user-up" | "user-down" ) )* "}"`
+}
+
+type LtmVirtualMetadata struct {
+	Name    string `@( Ident | QF5Name | F5Name | QString ) "{"`
+	Value   string `(  "value" @( Ident | QF5Name | F5Name | QString )`
+	Persist string ` | "persist" @( "true" | "false" ) )* "}"`
 }
 
 type LtmVirtualPersist struct {
@@ -76,10 +83,10 @@ type LtmVirtualSourceAddressTranslation struct {
 func newLtmVirtual(data ParsedConfig) (ret *LtmVirtual, err error) {
 	ret = &LtmVirtual{}
 	err = parseString("", data.Content, ret)
-	ret.original = data.Content
+	ret.OriginalConfig = data
 	return
 }
 
 func (o *LtmVirtual) Original() string {
-	return o.original
+	return o.OriginalConfig.Content
 }

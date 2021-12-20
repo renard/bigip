@@ -23,22 +23,18 @@ type F5Config struct {
 	LtmNode    f5config
 	LtmPool    f5config
 	LtmVirtual f5config
+	LtmRule    f5config
+	LtmProfile f5config
 }
 
-func newConfigOject(data []string) (ret F5Config) {
-	// kw := strings.Fields(data[0])
-	// fmt.Printf("kw: %#v %d\n", kw, len(kw))
-	// switch {
-	// case len(kw) < 2:
-	// 	return
-	// case kw[0] == "ltm":
-	// 	switch {
-	// 	case kw[1] == "virtual":
-	// 		ret = newLtmVirtual(data)
-	// 	}
-	// }
-	return ret
-
+func newF5Config() F5Config {
+	return F5Config{
+		LtmNode:    f5config{},
+		LtmVirtual: f5config{},
+		LtmPool:    f5config{},
+		LtmRule:    f5config{},
+		LtmProfile: f5config{},
+	}
 }
 
 // countBraces counts the braces balance in a line.
@@ -138,11 +134,6 @@ func parseLines(content string) (pc []ParsedConfig, err error) {
 		}
 	}
 
-	// for _, o := range ret {
-	// 	fmt.Println(o[0])
-	// 	t := newConfigOject(o)
-	// 	fmt.Printf("%#v\n", t)
-	// }
 	fmt.Printf("Found %d blocks in %d lines\n", len(pc), processed)
 	return
 
@@ -158,11 +149,7 @@ func ParseFile(file string) (cfg F5Config, err error) {
 
 	pc, err := parseLines(string(content))
 
-	cfg = F5Config{
-		LtmNode:    f5config{},
-		LtmVirtual: f5config{},
-		LtmPool:    f5config{},
-	}
+	cfg = newF5Config()
 
 	lines := 0
 	for _, o := range pc {
@@ -171,28 +158,47 @@ func ParseFile(file string) (cfg F5Config, err error) {
 		case strings.HasPrefix(o.Content, "ltm node "):
 			obj, e := newLtmNode(o)
 			if e != nil {
-				fmt.Printf("Err: %s: %s\n", o.Content, e)
+				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
 				continue
 			}
 			cfg.LtmNode[obj.Name] = obj
 		case strings.HasPrefix(o.Content, "ltm pool "):
 			obj, e := newLtmPool(o)
 			if e != nil {
-				fmt.Printf("Err: %s: %s\n", o.Content, e)
+				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
 				continue
 			}
 			cfg.LtmPool[obj.Name] = obj
 		case strings.HasPrefix(o.Content, "ltm virtual "):
 			obj, e := newLtmVirtual(o)
 			if e != nil {
-				fmt.Printf("Err: %s: %s\n", o.Content, e)
+				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
 				continue
 			}
 			cfg.LtmVirtual[obj.Name] = obj
+		case strings.HasPrefix(o.Content, "ltm rule "):
+			obj, e := newLtmRule(o)
+			if e != nil {
+				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
+				continue
+			}
+			cfg.LtmRule[obj.Name] = obj
+		case strings.HasPrefix(o.Content, "ltm profile "):
+			obj, e := newLtmProfile(o)
+			if e != nil {
+				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
+				continue
+			}
+			cfg.LtmProfile[obj.Name] = obj
 		}
 	}
 
-	fmt.Printf("Parsed %d objects %d lines: %d nodes, %d pools, %d virtuals\n", len(pc), lines, len(cfg.LtmNode), len(cfg.LtmPool), len(cfg.LtmVirtual))
+	fmt.Printf("Parsed %d objects %d lines: %d nodes, %d pools, %d virtuals, %d rules, %d profiles\n",
+		len(pc), lines, len(cfg.LtmNode),
+		len(cfg.LtmPool), len(cfg.LtmVirtual),
+		len(cfg.LtmRule), len(cfg.LtmProfile),
+	)
+
 	if false {
 		repr.Println(cfg)
 	}
