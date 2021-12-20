@@ -1,8 +1,6 @@
 package f5
 
 import (
-	"strings"
-
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
@@ -59,10 +57,9 @@ type LtmPoolFQDN struct {
 
 // newLtmPool parses data and creates a new LtmPool struct.
 func newLtmPool(data ParsedConfig) (ret *LtmPool, err error) {
-	o := strings.Join(data.Content, "\n")
 	ret = &LtmPool{}
-	err = parseString("", o, ret)
-	ret.original = o
+	err = parseString("", data.Content, ret)
+	ret.original = data.Content
 	return
 }
 

@@ -2,7 +2,6 @@ package f5
 
 import (
 	"github.com/alecthomas/participle/v2/lexer"
-	"strings"
 )
 
 // See https://clouddocs.f5.com/cli/tmsh-reference/latest/modules/ltm/ltm_node.html
@@ -35,10 +34,9 @@ type LtmNodeFQDN struct {
 
 // newLtmNode parses data and creates a new LtmNode struct.
 func newLtmNode(data ParsedConfig) (ret *LtmNode, err error) {
-	o := strings.Join(data.Content, "\n")
 	ret = &LtmNode{}
-	err = parseString("", o, ret)
-	ret.original = o
+	err = parseString("", data.Content, ret)
+	ret.original = data.Content
 	return
 }
 

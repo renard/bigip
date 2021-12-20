@@ -2,7 +2,6 @@ package f5
 
 import (
 	"embed"
-	"strings"
 	"testing"
 
 	"github.com/alecthomas/repr"
@@ -17,7 +16,7 @@ func TestLtmVirtual(t *testing.T) {
 	files := getFiles(testsLtmVirtual)
 	for _, file := range files {
 		data, _ := testsLtmVirtual.ReadFile(file)
-		obj, err := newLtmVirtual(ParsedConfig{Content: strings.Split(string(data), "\n")})
+		obj, err := newLtmVirtual(ParsedConfig{Content: string(data)})
 		if err != nil {
 			t.Errorf("%s Cannot parse virtual snippet: %s", file, err)
 		}

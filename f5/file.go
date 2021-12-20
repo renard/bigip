@@ -13,7 +13,7 @@ type F5Object interface {
 }
 
 type ParsedConfig struct {
-	Content []string
+	Content string
 	Lines   [2]int
 	File    string
 }
@@ -123,10 +123,9 @@ func parseLines(content string) (pc []ParsedConfig, err error) {
 			l := len(tmp)
 			processed += 1
 			pc = append(pc, ParsedConfig{
-				Content: make([]string, l),
+				Content: strings.Join(tmp, "\n"),
 				Lines:   [2]int{i - l, i},
 			})
-			copy(pc[retCur].Content, tmp)
 
 			retCur += 1
 			tmp = tmp[:0]
@@ -173,32 +172,29 @@ func ParseFile(file string) (cfg F5Config, err error) {
 		lines += len(o.Content)
 		// fmt.Printf("%d\t%s\n", len(o), o[0])
 		switch {
-		case strings.HasPrefix(o.Content[0], "ltm node "):
+		case strings.HasPrefix(o.Content, "ltm node "):
 			obj, e := newLtmNode(o)
 			if e != nil {
-				fmt.Printf("Err: %s: %s\n", o.Content[0], e)
+				fmt.Printf("Err: %s: %s\n", o.Content, e)
 				continue
 			}
 			cfg.LtmNode[obj.Name] = obj
-			_ = obj
 			nodes += 1
-		case strings.HasPrefix(o.Content[0], "ltm pool "):
+		case strings.HasPrefix(o.Content, "ltm pool "):
 			obj, e := newLtmPool(o)
 			if e != nil {
-				fmt.Printf("Err: %s: %s\n", o.Content[0], e)
+				fmt.Printf("Err: %s: %s\n", o.Content, e)
 				continue
 			}
 			cfg.LtmPool[obj.Name] = obj
-			_ = obj
 			pools += 1
-		case strings.HasPrefix(o.Content[0], "ltm virtual "):
+		case strings.HasPrefix(o.Content, "ltm virtual "):
 			obj, e := newLtmVirtual(o)
 			if e != nil {
-				fmt.Printf("Err: %s: %s\n", o.Content[0], e)
+				fmt.Printf("Err: %s: %s\n", o.Content, e)
 				continue
 			}
 			cfg.LtmVirtual[obj.Name] = obj
-			_ = obj
 			virtuals += 1
 		}
 	}
