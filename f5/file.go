@@ -164,13 +164,9 @@ func ParseFile(file string) (cfg F5Config, err error) {
 		LtmPool:    f5config{},
 	}
 
-	nodes := 0
-	pools := 0
-	virtuals := 0
 	lines := 0
 	for _, o := range pc {
 		lines += len(o.Content)
-		// fmt.Printf("%d\t%s\n", len(o), o[0])
 		switch {
 		case strings.HasPrefix(o.Content, "ltm node "):
 			obj, e := newLtmNode(o)
@@ -179,7 +175,6 @@ func ParseFile(file string) (cfg F5Config, err error) {
 				continue
 			}
 			cfg.LtmNode[obj.Name] = obj
-			nodes += 1
 		case strings.HasPrefix(o.Content, "ltm pool "):
 			obj, e := newLtmPool(o)
 			if e != nil {
@@ -187,7 +182,6 @@ func ParseFile(file string) (cfg F5Config, err error) {
 				continue
 			}
 			cfg.LtmPool[obj.Name] = obj
-			pools += 1
 		case strings.HasPrefix(o.Content, "ltm virtual "):
 			obj, e := newLtmVirtual(o)
 			if e != nil {
@@ -195,11 +189,10 @@ func ParseFile(file string) (cfg F5Config, err error) {
 				continue
 			}
 			cfg.LtmVirtual[obj.Name] = obj
-			virtuals += 1
 		}
 	}
 
-	fmt.Printf("Parsed %d objects %d lines: %d nodes, %d pools, %d virtuals\n", len(pc), lines, nodes, pools, virtuals)
+	fmt.Printf("Parsed %d objects %d lines: %d nodes, %d pools, %d virtuals\n", len(pc), lines, len(cfg.LtmNode), len(cfg.LtmPool), len(cfg.LtmVirtual))
 	if false {
 		repr.Println(cfg)
 	}
