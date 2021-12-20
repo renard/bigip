@@ -22,7 +22,7 @@ type LtmPool struct {
 	MinUpMembers           int              ` | "min-up-members" @Ident`
 	MinUpMembersAction     string           ` | "min-up-members-action" @Ident`
 	MinUpMembersChecking   string           ` | "min-up-members-checking" @Ident`
-	Monitor                []string         ` | "monitor" ( ( "min" Ident "of" "{" @( F5Name | QF5Name ) ("and"? @(F5Name | QF5Name) )* "}" ) | @( "none" | F5Name | QF5Name | Ident ) ("and"? @(F5Name | QF5Name ) )* )` // all and indent for v10.x
+	Monitor                []string         ` | ("monitor" ( ( "min" Ident "of" "{" @( F5Name | QF5Name ) ("and"? @(F5Name | QF5Name) )* "}" ) | @( "none" | F5Name | QF5Name ) ("and"? @(F5Name | QF5Name ) )* )) | ( "monitor" "all" @( Ident ) ("and" @( Ident ) )*  )` // all and indent for v10.x
 	Profiles               string           ` | "profiles" @( "none" | @F5Name | @QF5Name )`
 	QueueOnConnectionLimit string           ` | "queue-on-connection-limit" @( "enabled" | "disabled" )`
 	QueueDepthLimit        int              ` | "queue-depth-limit" @Ident`
