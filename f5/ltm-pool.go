@@ -8,7 +8,7 @@ import (
 type LtmPool struct {
 	OriginalConfig         ParsedConfig
 	Pos                    lexer.Position
-	Name                   string           `"ltm" "pool" ( @F5Name | @QF5Name ) "{"`
+	Name                   string           `("ltm" "pool" ( @F5Name | @QF5Name ) | "pool" ( @F5Name | @QF5Name | @Ident)) "{"` // + version 10.x
 	AllowNat               string           `(  "allow-nat" @( "yes" | "no" )`
 	AllowSnat              string           ` | "allow-snat" @( "yes" | "no" )`
 	AppService             string           ` | "app-service" @( "none" | QString | Ident )`
@@ -17,23 +17,23 @@ type LtmPool struct {
 	GatewayFailsafeDevice  string           ` | "gateway-failsafe-device" @( QString | Ident )`
 	IgnorePersistedWeight  string           ` | "ignore-persisted-weight" @( "yes" | "no" | "enabled" )`
 	LoadBalancingMode      string           ` | "load-balancing-mode" @( F5lbMode  )` // TODO: limit algos
-	Members                *[]LtmPoolMember ` | "members" "{" @@* "}"`
+	Members                *[]LtmPoolMember ` | "members" ("{" @@* "}" | @@ ) `
 	MinActiveMembers       int              ` | "min-active-members" @Ident`
 	MinUpMembers           int              ` | "min-up-members" @Ident`
 	MinUpMembersAction     string           ` | "min-up-members-action" @Ident`
 	MinUpMembersChecking   string           ` | "min-up-members-checking" @Ident`
-	Monitor                []string         ` | "monitor" ( ( "min" Ident "of" "{" @( F5Name | QF5Name ) ("and"? @(F5Name | QF5Name) )* "}" ) | @( "none" | F5Name | QF5Name ) ("and"? @(F5Name | QF5Name) )* )`
+	Monitor                []string         ` | "monitor" ( ( "min" Ident "of" "{" @( F5Name | QF5Name ) ("and"? @(F5Name | QF5Name) )* "}" ) | @( "none" | F5Name | QF5Name | Ident ) ("and"? @(F5Name | QF5Name ) )* )` // all and indent for v10.x
 	Profiles               string           ` | "profiles" @( "none" | @F5Name | @QF5Name )`
 	QueueOnConnectionLimit string           ` | "queue-on-connection-limit" @( "enabled" | "disabled" )`
 	QueueDepthLimit        int              ` | "queue-depth-limit" @Ident`
 	QueueTimeLimit         int              ` | "queue-time-limit" @Ident`
 	ReselectTries          int              ` | "reselect-tries" @Ident`
 	ServiceDownAction      string           ` | "service-down-action" @Ident`
-	SlowRampTime           int              ` | "slow-ramp-time" @Ident  )* "}"`
+	SlowRampTime           int              ` | ("slow-ramp-time" | "slow" "ramp" "time") @Ident  )* "}"`
 }
 
 type LtmPoolMember struct {
-	Name            string       `@(F5Name | QF5Name) "{"`
+	Name            string       `@(F5Name | QF5Name | Ident) "{"`
 	Address         string       ` ( "address" @Ident`
 	AppService      string       ` | "app-service" @( "none" | QString | Ident )`
 	ConnectionLimit int          ` | "connection-limit" @Ident`
@@ -41,11 +41,11 @@ type LtmPoolMember struct {
 	DynamicRatio    int          ` | "dynamic-ratio" @Ident`
 	InheritProfile  *bool        ` | "inherit-profile" @("enabled" | "disabled")`
 	Logging         *bool        ` | "logging" @("enabled" | "disabled")`
-	Monitor         []string     ` | "monitor" ( ( "min" Ident "of" "{" @( F5Name | QF5Name ) ("and"? @(F5Name | QF5Name) )* "}" ) | @( "none" | F5Name | QF5Name ) ("and"? @(F5Name | QF5Name) )* )`
+	Monitor         []string     ` | "monitor" ( ( "min" Ident "of" "{" @( F5Name | QF5Name ) ("and"? @(F5Name | QF5Name) )* "}" ) | @( "none" | F5Name | QF5Name | Ident) ("and"? @(F5Name | QF5Name | Ident) )* )`
 	PriorityGroup   string       ` | "priority-group" @( "none" | Ident )`
 	RateLimit       int          ` | "rate-limit" @Ident`
 	Ratio           int          ` | "ratio" @Ident`
-	Session         string       ` | "session" @( "user-enabled" | "user-disabled")`
+	Session         string       ` | "session" @( "user-enabled" | "user-disabled" | "user" "disabled")`
 	State           string       ` | "state" @( "user-up" | "user-down" )`
 	FQDN            *LtmPoolFQDN ` | "fqdn" "{" @@ "}" )* "}"`
 }

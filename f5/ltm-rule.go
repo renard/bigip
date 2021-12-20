@@ -10,7 +10,7 @@ import (
 type LtmRule struct {
 	OriginalConfig ParsedConfig
 	Pos            lexer.Position
-	Name           string `"ltm" "rule" ( @F5Name | @QF5Name ) "{"?`
+	Name           string `("ltm" "rule" @( F5Name | QF5Name ) | "rule" @( F5Name | QF5Name | Ident)) "{"?`
 }
 
 // newLtmRule parses data and creates a new LtmRule struct.

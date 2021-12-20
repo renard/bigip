@@ -8,7 +8,7 @@ import (
 type LtmVirtual struct {
 	OriginalConfig           ParsedConfig
 	Pos                      lexer.Position
-	Name                     string                                `"ltm" "virtual" ( @F5Name | @QF5Name ) "{"`
+	Name                     string                                `("ltm" "virtual" @(F5Name | QF5Name ) | "virtual" "address"? @(F5Name | QF5Name | Ident)) "{"`
 	Description              string                                `( "description" @( QString | Ident )`
 	AddressStatus            string                                ` | "address-status" @( "yes" | "no" )`
 	AppService               string                                ` | "app-service" @( "none" | QString | Ident )`
@@ -17,20 +17,22 @@ type LtmVirtual struct {
 	BwcPolicy                string                                ` | "bwc-policy" @( F5Name | QF5Name )` // OLD Devices?
 	ConnectionLimit          int                                   ` | "connection-limit" @( Ident )`      // OLD Devices?
 	ClonePools               []*LtmVirtualClonePool                ` | "clone-pools" "{" @@+ "}"`
-	Destination              string                                ` | "destination" @( F5Name | QF5Name )`
-	Enabled                  string                                ` | @( "enabled" | "disabled" )`
+	Destination              string                                ` | "destination" @( F5Name | QF5Name | Ident )`
+	Enabled                  string                                ` | @( "enabled" | "disabled" | "disable" )`
 	FallbackPersistence      string                                ` | "fallback-persistence" @( F5Name | QF5Name )`
-	IpProtocol               string                                ` | "ip-protocol" @( "any" | "udp" | "tcp" )`
+	IpProtocol               string                                ` | ("ip-protocol" | "ip" "protocol") @( "any" | "udp" | "tcp" )`
 	Mask                     string                                ` | "mask" @Ident`
-	Pool                     string                                ` | "pool" @( F5Name | QF5Name )`
+	Pool                     string                                ` | "pool" @( F5Name | QF5Name | Ident )`
 	Persist                  []*LtmVirtualPersist                  ` | "persist" "{" @@+ "}"`
+	PersistOLD               string                                ` | "persist" @Ident`
 	Profiles                 []*LtmVirtualProfile                  ` | "profiles" "{" @@+ "}"`
 	Policies                 []*LtmVirtualPolicy                   ` | "policies" "{" @@+ "}"`
-	Rules                    []string                              ` | "rules" "{" @( QF5Name | F5Name)+ "}"`
+	Rules                    []string                              ` | "rules" ( "{" @( QF5Name | F5Name | Ident)+ "}" | @( QF5Name | F5Name | Ident) )`
 	SecurityLogProfiles      []string                              ` | "security-log-profiles" "{" @(Ident | QF5Name | F5Name | QString)* "}"` // OLD Devices?
 	Source                   string                                ` | "source" @Ident`
 	SourcePort               string                                ` | "source-port" @Ident`
 	SourceAddressTranslation []*LtmVirtualSourceAddressTranslation ` | "source-address-translation" "{" @@ "}"`
+	Translate                string                                ` | "translate" "service" @( "enable" | "disable")` // OLD device
 	TranslateAddress         string                                ` | "translate-address" @( "enabled" | "disabled")`
 	TranslatePort            string                                ` | "translate-port" @( "enabled" | "disabled")`
 	Metadata                 []*LtmVirtualMetadata                 ` | "metadata" "{" @@* "}"`
@@ -70,7 +72,7 @@ type LtmVirtualClonePool struct {
 }
 
 type LtmVirtualProfile struct {
-	Name    string `@( F5Name | QF5Name ) "{"`
+	Name    string `@( F5Name | QF5Name | Ident ) "{"`
 	Context string `("context" @( "all" | "clientside" | "serverside") )? "}"`
 }
 

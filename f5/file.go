@@ -155,35 +155,35 @@ func ParseFile(file string) (cfg F5Config, err error) {
 	for _, o := range pc {
 		lines += len(o.Content)
 		switch {
-		case strings.HasPrefix(o.Content, "ltm node "):
+		case strings.HasPrefix(o.Content, "ltm node ") || strings.HasPrefix(o.Content, "node "):
 			obj, e := newLtmNode(o)
 			if e != nil {
 				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
 				continue
 			}
 			cfg.LtmNode[obj.Name] = obj
-		case strings.HasPrefix(o.Content, "ltm pool "):
+		case strings.HasPrefix(o.Content, "ltm pool ") || strings.HasPrefix(o.Content, "pool "):
 			obj, e := newLtmPool(o)
 			if e != nil {
 				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
 				continue
 			}
 			cfg.LtmPool[obj.Name] = obj
-		case strings.HasPrefix(o.Content, "ltm virtual "):
+		case strings.HasPrefix(o.Content, "ltm virtual ") || strings.HasPrefix(o.Content, "virtual "):
 			obj, e := newLtmVirtual(o)
 			if e != nil {
 				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
 				continue
 			}
 			cfg.LtmVirtual[obj.Name] = obj
-		case strings.HasPrefix(o.Content, "ltm rule "):
+		case strings.HasPrefix(o.Content, "ltm rule ") || strings.HasPrefix(o.Content, "rule "):
 			obj, e := newLtmRule(o)
 			if e != nil {
 				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
 				continue
 			}
 			cfg.LtmRule[obj.Name] = obj
-		case strings.HasPrefix(o.Content, "ltm profile "):
+		case strings.HasPrefix(o.Content, "ltm profile ") || strings.HasPrefix(o.Content, "profile "):
 			obj, e := newLtmProfile(o)
 			if e != nil {
 				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)

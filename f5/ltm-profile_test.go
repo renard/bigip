@@ -20,7 +20,7 @@ func TestLtmProfile(t *testing.T) {
 		if err != nil {
 			t.Errorf("%s Cannot parse profile snippet: %s", file, err)
 		}
-		if false || true {
+		if false {
 			repr.Println(obj)
 		}
 	}

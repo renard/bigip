@@ -8,7 +8,7 @@ import (
 type LtmNode struct {
 	OriginalConfig  ParsedConfig
 	Pos             lexer.Position
-	Name            string       `"ltm" "node" ( @F5Name | @QF5Name ) "{"`
+	Name            string       `("ltm" "node" ( @F5Name | @QF5Name ) | "node" ( @F5Name | @QF5Name | @Ident) )"{"` // + version 10.x
 	Description     string       `( "description" @( QString | Ident )`
 	Address         string       ` | "address" @Ident`
 	AppService      string       ` | "app-service" @( "none" | QString | Ident )`
@@ -17,10 +17,11 @@ type LtmNode struct {
 	DynamicRatio    int          ` | "dynamic-ratio" @Ident`
 	Fqdn            *LtmNodeFQDN ` | "fqdn" "{" @@ "}"`
 	Logging         *bool        ` | "logging" @("enabled" | "disabled")`
-	Monitor         string       ` | "monitor" @( "none" | @F5Name | @QF5Name )`
+	Monitor         []string     ` | "monitor" @( ("none" | F5Name | QF5Name | Ident ) ("and"? ( F5Name | QF5Name | Ident ))*)` // @Ident for version 10.x
 	RateLimit       int          ` | "rate-limit" @Ident`
 	Ratio           int          ` | "ratio" @Ident`
 	Session         string       ` | "session" @( "user-enabled" | "user-disabled")`
+	Screen          string       ` | "screen" @Ident` // version 10.x
 	State           string       ` | "state" @( "user-up" | "user-down" ) )* "}"`
 }
 

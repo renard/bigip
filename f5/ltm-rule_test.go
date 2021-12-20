@@ -20,7 +20,7 @@ func TestLtmRule(t *testing.T) {
 		if err != nil {
 			t.Errorf("%s Cannot parse rule snippet: %s", file, err)
 		}
-		if false || true {
+		if false {
 			repr.Println(obj)
 		}
 	}
