@@ -13,10 +13,12 @@ type Parse struct {
 func (c *Parse) Run(clictx *CLIContext) (err error) {
 	log.Debug("Parsing configuration files %#v", c.Files)
 
+	hap := &haproxy.Config{}
+
 	cfg, err := f5.ParseFile(c.Files[0])
 	if err != nil {
 		return
 	}
-	err = haproxy.Render(cfg)
+	err = haproxy.Render(hap, cfg)
 	return
 }

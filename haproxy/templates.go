@@ -18,20 +18,6 @@ var (
 	tpl embed.FS
 )
 
-func comment(str string, indent int) string {
-	idstr := strings.Repeat(" ", indent)
-	lines := strings.Split(str, "\n")
-	for i, line := range lines {
-		lines[i] = idstr + "# " + line
-	}
-	return strings.Join(lines, "\n")
-}
-
-func ipport(str string) string {
-	strs := strings.Split(str, "/")
-	return strs[len(strs)-1]
-}
-
 // func hasTemplate(name string) bool {
 // 	return tmpl.Lookup(name) != nil
 // }
@@ -51,6 +37,9 @@ func ipport(str string) string {
 // 	return buf.String(), nil
 // }
 
+type Config struct {
+}
+
 func addExtraTemplates(t *template.Template, dir string) (err error) {
 	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if strings.Contains(path, ".cfg") {
@@ -65,7 +54,7 @@ func addExtraTemplates(t *template.Template, dir string) (err error) {
 }
 
 // https://forum.golangbridge.org/t/template-check-if-block-is-defined/6928/2
-func Render(cfg f5.F5Config) (err error) {
+func Render(config *Config, cfg f5.F5Config) (err error) {
 	tmpls := template.New("")
 	funcs := template.FuncMap{
 		"comment": comment,
@@ -109,6 +98,6 @@ func Render(cfg f5.F5Config) (err error) {
 	}{
 		Cfg: cfg,
 	})
-	repr.Println(t.DefinedTemplates())
+	// repr.Println(t.DefinedTemplates())
 	return
 }
