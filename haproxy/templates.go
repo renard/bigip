@@ -18,26 +18,8 @@ var (
 	tpl embed.FS
 )
 
-// func hasTemplate(name string) bool {
-// 	return tmpl.Lookup(name) != nil
-// }
-
-// func templateIfExists(name string, pipeline interface{}) (string, error) {
-// 	t := tmpl.Lookup(name)
-// 	if t == nil {
-// 		return "", nil
-// 	}
-
-// 	buf := &bytes.Buffer{}
-// 	err := t.Execute(buf, pipeline)
-// 	if err != nil {
-// 		return "", err
-// 	}
-
-// 	return buf.String(), nil
-// }
-
 type Config struct {
+	TemplateDir []string
 }
 
 func addExtraTemplates(t *template.Template, dir string) (err error) {
@@ -53,12 +35,12 @@ func addExtraTemplates(t *template.Template, dir string) (err error) {
 	return err
 }
 
-// https://forum.golangbridge.org/t/template-check-if-block-is-defined/6928/2
 func Render(config *Config, cfg f5.F5Config) (err error) {
 	tmpls := template.New("")
 	funcs := template.FuncMap{
 		"comment": comment,
 		"ipport":  ipport,
+		// https://forum.golangbridge.org/t/template-check-if-block-is-defined/6928/2
 		"hasTemplate": func(name string) bool {
 			return tmpls.Lookup(name) != nil
 		},
@@ -83,9 +65,11 @@ func Render(config *Config, cfg f5.F5Config) (err error) {
 		return
 	}
 
-	err = addExtraTemplates(tmpls, "templates")
-	if err != nil {
-		return
+	for _, td := range config.TemplateDir {
+		err = addExtraTemplates(tmpls, td)
+		if err != nil {
+			return
+		}
 	}
 
 	if false {
@@ -98,6 +82,5 @@ func Render(config *Config, cfg f5.F5Config) (err error) {
 	}{
 		Cfg: cfg,
 	})
-	// repr.Println(t.DefinedTemplates())
 	return
 }

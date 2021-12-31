@@ -7,13 +7,16 @@ import (
 )
 
 type Parse struct {
-	Files []string `arg help:"Configuration files" type:"string"`
+	Templates []string `short:"t" help:"Custom template directory" type:"string"`
+	Files     []string `arg help:"Configuration files" type:"string"`
 }
 
 func (c *Parse) Run(clictx *CLIContext) (err error) {
 	log.Debug("Parsing configuration files %#v", c.Files)
 
-	hap := &haproxy.Config{}
+	hap := &haproxy.Config{
+		TemplateDir: c.Templates,
+	}
 
 	cfg, err := f5.ParseFile(c.Files[0])
 	if err != nil {
