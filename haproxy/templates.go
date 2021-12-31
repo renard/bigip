@@ -88,7 +88,8 @@ func Render(cfg f5.F5Config) (err error) {
 			return buf.String(), nil
 		},
 	}
-	tmpls, err = tmpls.Funcs(funcs).ParseFS(tpl, "templates/*.cfg")
+	tmpls = tmpls.Funcs(funcs)
+	tmpls, err = tmpls.ParseFS(tpl, "templates/*.cfg")
 	if err != nil {
 		return
 	}

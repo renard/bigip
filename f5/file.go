@@ -120,7 +120,8 @@ func parseLines(content string) (pc []ParsedConfig, err error) {
 			processed += 1
 			pc = append(pc, ParsedConfig{
 				Content: strings.Join(tmp, "\n"),
-				Lines:   [2]int{i - l, i},
+				// Why?
+				Lines: [2]int{i - l + 2, i + 1},
 			})
 
 			retCur += 1
