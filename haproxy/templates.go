@@ -36,8 +36,8 @@ func addExtraTemplates(t *template.Template, dir string) (err error) {
 	return err
 }
 
-func Render(config *Config, cfg f5.F5Config) (err error) {
-	tmpls := template.New("")
+func loadTemplates(config *Config) (tmpls *template.Template, err error) {
+	tmpls = template.New("")
 	funcs := template.FuncMap{
 		"comment": comment,
 		"ipport":  ipport,
@@ -73,6 +73,14 @@ func Render(config *Config, cfg f5.F5Config) (err error) {
 			return
 		}
 	}
+	return
+}
+
+func Render(config *Config, cfg f5.F5Config) (err error) {
+	tmpls, err := loadTemplates(config)
+	if err != nil {
+		return
+	}
 
 	if false {
 		repr.Println(tmpls)
@@ -88,12 +96,10 @@ func Render(config *Config, cfg f5.F5Config) (err error) {
 }
 
 func GenerateTemplates(config *Config, cfg f5.F5Config) (err error) {
-	funcs := template.FuncMap{
-		"comment": comment,
+	tmpls, err := loadTemplates(config)
+	if err != nil {
+		return
 	}
-	tmpls := template.New("")
-	tmpls = tmpls.Funcs(funcs)
-	tmpls, err = tmpls.ParseFS(tpl, "templates/export.cfg")
 
 	t := tmpls.Lookup("export")
 	err = t.Execute(os.Stdout, struct {
