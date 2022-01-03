@@ -86,3 +86,20 @@ func Render(config *Config, cfg f5.F5Config) (err error) {
 	})
 	return
 }
+
+func GenerateTemplates(config *Config, cfg f5.F5Config) (err error) {
+	funcs := template.FuncMap{
+		"comment": comment,
+	}
+	tmpls := template.New("")
+	tmpls = tmpls.Funcs(funcs)
+	tmpls, err = tmpls.ParseFS(tpl, "templates/export.cfg")
+
+	t := tmpls.Lookup("export")
+	err = t.Execute(os.Stdout, struct {
+		Cfg f5.F5Config
+	}{
+		Cfg: cfg,
+	})
+	return
+}
