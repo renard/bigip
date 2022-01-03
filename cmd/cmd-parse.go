@@ -19,7 +19,7 @@ func (c *Parse) Run(clictx *CLIContext) (err error) {
 		TemplateDir: c.Templates,
 	}
 
-	cfg, err := f5.ParseFile(c.Files[0])
+	cfg, err := f5.ParseFile(c.Files)
 	if err != nil {
 		return
 	}

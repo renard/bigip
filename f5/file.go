@@ -27,6 +27,49 @@ type F5Config struct {
 	LtmProfile f5config
 }
 
+type DuplicatedConfigEntry struct {
+	obj   string
+	entry string
+}
+
+func (e DuplicatedConfigEntry) Error() string {
+	return fmt.Sprintf("Duplicated config Entry: %s", e.entry)
+}
+
+func (c *F5Config) Merge(n F5Config) error {
+	for k, v := range n.LtmNode {
+		if ok := c.LtmNode[k]; ok != nil {
+			return DuplicatedConfigEntry{entry: k, obj: "LtmNode"}
+		}
+		c.LtmNode[k] = v
+	}
+	for k, v := range n.LtmPool {
+		if ok := c.LtmPool[k]; ok != nil {
+			return DuplicatedConfigEntry{entry: k, obj: "LtmPool"}
+		}
+		c.LtmPool[k] = v
+	}
+	for k, v := range n.LtmVirtual {
+		if ok := c.LtmVirtual[k]; ok != nil {
+			return DuplicatedConfigEntry{entry: k, obj: "LtmVirtual"}
+		}
+		c.LtmVirtual[k] = v
+	}
+	for k, v := range n.LtmRule {
+		if ok := c.LtmRule[k]; ok != nil {
+			return DuplicatedConfigEntry{entry: k, obj: "LtmRule"}
+		}
+		c.LtmRule[k] = v
+	}
+	for k, v := range n.LtmProfile {
+		if ok := c.LtmProfile[k]; ok != nil {
+			return DuplicatedConfigEntry{entry: k, obj: "LtmProfile"}
+		}
+		c.LtmProfile[k] = v
+	}
+	return nil
+}
+
 func newF5Config() F5Config {
 	return F5Config{
 		LtmNode:    f5config{},
@@ -89,9 +132,11 @@ func countBraces2(line string) (count int) {
 	return
 }
 
-func parseLines(content string) (pc []ParsedConfig, err error) {
+func parseLines(file, content string) (pc []ParsedConfig, err error) {
 	lines := strings.Split(content, "\n")
-	fmt.Printf("Need to process %d lines\n", len(lines))
+	if false {
+		fmt.Printf("Need to process %d lines\n", len(lines))
+	}
 	tmp := []string{}
 	processed := 0
 	opened := 0
@@ -120,6 +165,7 @@ func parseLines(content string) (pc []ParsedConfig, err error) {
 			processed += 1
 			pc = append(pc, ParsedConfig{
 				Content: strings.Join(tmp, "\n"),
+				File:    file,
 				// Why?
 				Lines: [2]int{i - l + 2, i + 1},
 			})
@@ -134,21 +180,37 @@ func parseLines(content string) (pc []ParsedConfig, err error) {
 			tmp = append(tmp, line)
 		}
 	}
-
-	fmt.Printf("Found %d blocks in %d lines\n", len(pc), processed)
+	if false {
+		fmt.Printf("Found %d blocks in %d lines\n", len(pc), processed)
+	}
 	return
 
 }
 
+func ParseFile(files []string) (cfg F5Config, err error) {
+	cfg = newF5Config()
+	for _, file := range files {
+		tmpCfg, e := parseFile(file)
+		if e != nil {
+			return newF5Config(), e
+		}
+		err = cfg.Merge(tmpCfg)
+		if err != nil {
+			return newF5Config(), err
+		}
+	}
+	return
+}
+
 // ParseFile read and split file.
-func ParseFile(file string) (cfg F5Config, err error) {
+func parseFile(file string) (cfg F5Config, err error) {
 
 	content, err := ioutil.ReadFile(file)
 	if err != nil {
 		return
 	}
 
-	pc, err := parseLines(string(content))
+	pc, err := parseLines(file, string(content))
 
 	cfg = newF5Config()
 
@@ -194,12 +256,13 @@ func ParseFile(file string) (cfg F5Config, err error) {
 		}
 	}
 
-	fmt.Printf("Parsed %d objects %d lines: %d nodes, %d pools, %d virtuals, %d rules, %d profiles\n",
-		len(pc), lines, len(cfg.LtmNode),
-		len(cfg.LtmPool), len(cfg.LtmVirtual),
-		len(cfg.LtmRule), len(cfg.LtmProfile),
-	)
-
+	if false {
+		fmt.Printf("Parsed %d objects %d lines: %d nodes, %d pools, %d virtuals, %d rules, %d profiles\n",
+			len(pc), lines, len(cfg.LtmNode),
+			len(cfg.LtmPool), len(cfg.LtmVirtual),
+			len(cfg.LtmRule), len(cfg.LtmProfile),
+		)
+	}
 	if false {
 		repr.Println(cfg)
 	}
