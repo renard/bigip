@@ -10,6 +10,7 @@ import (
 
 	"bigip/f5"
 
+	"github.com/Masterminds/sprig"
 	"github.com/alecthomas/repr"
 )
 
@@ -59,6 +60,7 @@ func Render(config *Config, cfg f5.F5Config) (err error) {
 			return buf.String(), nil
 		},
 	}
+	tmpls = tmpls.Funcs(sprig.TxtFuncMap())
 	tmpls = tmpls.Funcs(funcs)
 	tmpls, err = tmpls.ParseFS(tpl, "templates/*.cfg")
 	if err != nil {
@@ -76,7 +78,7 @@ func Render(config *Config, cfg f5.F5Config) (err error) {
 		repr.Println(tmpls)
 	}
 
-	t := tmpls.Lookup("main.cfg")
+	t := tmpls.Lookup("main")
 	err = t.Execute(os.Stdout, struct {
 		Cfg f5.F5Config
 	}{
