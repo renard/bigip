@@ -39,8 +39,9 @@ func addExtraTemplates(t *template.Template, dir string) (err error) {
 func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 	tmpls = template.New("")
 	funcs := template.FuncMap{
-		"comment": comment,
-		"ipport":  ipport,
+		"comment":  comment,
+		"scomment": spacedComment,
+		"ipport":   ipport,
 		// https://forum.golangbridge.org/t/template-check-if-block-is-defined/6928/2
 		"hasTemplate": func(name string) bool {
 			return tmpls.Lookup(name) != nil
