@@ -27,6 +27,11 @@ func indent(str string, indent int) string {
 	return strings.Join(lines, "\n")
 }
 
+func stripport(str string) string {
+	strs := strings.Split(str, ":")
+	return strs[0]
+}
+
 func ipport(str string) string {
 	strs := strings.Split(str, "/")
 	return strs[len(strs)-1]
