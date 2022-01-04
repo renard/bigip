@@ -70,7 +70,7 @@ func (c *F5Config) Merge(n F5Config) error {
 	return nil
 }
 
-func newF5Config() F5Config {
+func NewF5Config() F5Config {
 	return F5Config{
 		LtmNode:    f5config{},
 		LtmVirtual: f5config{},
@@ -188,15 +188,15 @@ func parseLines(file, content string) (pc []ParsedConfig, err error) {
 }
 
 func ParseFile(files []string) (cfg F5Config, err error) {
-	cfg = newF5Config()
+	cfg = NewF5Config()
 	for _, file := range files {
 		tmpCfg, e := parseFile(file)
 		if e != nil {
-			return newF5Config(), e
+			return NewF5Config(), e
 		}
 		err = cfg.Merge(tmpCfg)
 		if err != nil {
-			return newF5Config(), err
+			return NewF5Config(), err
 		}
 	}
 	return
@@ -212,7 +212,7 @@ func parseFile(file string) (cfg F5Config, err error) {
 
 	pc, err := parseLines(file, string(content))
 
-	cfg = newF5Config()
+	cfg = NewF5Config()
 
 	lines := 0
 	for _, o := range pc {

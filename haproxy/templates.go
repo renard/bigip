@@ -21,6 +21,7 @@ var (
 
 type Config struct {
 	TemplateDir []string
+	Export      []string
 }
 
 func addExtraTemplates(t *template.Template, dir string) (err error) {
@@ -96,17 +97,32 @@ func Render(config *Config, cfg f5.F5Config) (err error) {
 	return
 }
 
-func GenerateTemplates(config *Config, cfg f5.F5Config) (err error) {
+func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 	tmpls, err := loadTemplates(config)
 	if err != nil {
 		return
 	}
 
+	f5c := f5.NewF5Config()
+	if len(config.Export) == 0 {
+		f5c = f5config
+	} else {
+		for _, f := range config.Export {
+			switch f {
+			case "rule":
+				f5c.LtmRule = f5config.LtmRule
+			case "profile":
+				f5c.LtmProfile = f5config.LtmProfile
+			}
+		}
+	}
 	t := tmpls.Lookup("export")
 	err = t.Execute(os.Stdout, struct {
-		Cfg f5.F5Config
+		F5config f5.F5Config
+		Config   Config
 	}{
-		Cfg: cfg,
+		F5config: f5c,
+		Config:   *config,
 	})
 	return
 }
