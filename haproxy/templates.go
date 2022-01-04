@@ -42,6 +42,7 @@ func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 	funcs := template.FuncMap{
 		"comment":  comment,
 		"scomment": spacedComment,
+		"indent":   indent,
 		"ipport":   ipport,
 		// https://forum.golangbridge.org/t/template-check-if-block-is-defined/6928/2
 		"hasTemplate": func(name string) bool {
@@ -61,6 +62,25 @@ func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 
 			return buf.String(), nil
 		},
+		"templateIndent": func(level int, name string, pipeline interface{}) (string, error) {
+			t := tmpls.Lookup(name)
+			if t == nil {
+				return "", err
+			}
+
+			buf := &bytes.Buffer{}
+			err := t.Execute(buf, pipeline)
+			if err != nil {
+				return "", err
+			}
+
+			idstr := strings.Repeat(" ", level)
+			lines := strings.Split(buf.String(), "\n")
+			for i, line := range lines {
+				lines[i] = idstr + line
+			}
+			return strings.Join(lines, "\n"), nil
+		},
 	}
 	tmpls = tmpls.Funcs(sprig.TxtFuncMap())
 	tmpls = tmpls.Funcs(funcs)
@@ -78,7 +98,7 @@ func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 	return
 }
 
-func Render(config *Config, cfg f5.F5Config) (err error) {
+func Render(config *Config, f5config f5.F5Config) (err error) {
 	tmpls, err := loadTemplates(config)
 	if err != nil {
 		return
@@ -90,9 +110,11 @@ func Render(config *Config, cfg f5.F5Config) (err error) {
 
 	t := tmpls.Lookup("main")
 	err = t.Execute(os.Stdout, struct {
-		Cfg f5.F5Config
+		F5config f5.F5Config
+		Config   Config
 	}{
-		Cfg: cfg,
+		F5config: f5config,
+		Config:   *config,
 	})
 	return
 }

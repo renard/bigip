@@ -7,9 +7,8 @@ import (
 )
 
 type Parse struct {
-	Templates    []string `short:"t" help:"Custom template directory" type:"string"`
-	GenTemplates bool     `short:"g" help:"Generate templates" type:"bool"`
-	Files        []string `arg help:"Configuration files" type:"string"`
+	Templates []string `short:"t" help:"Custom template directory" type:"string"`
+	Files     []string `arg help:"Configuration files" type:"string"`
 }
 
 func (c *Parse) Run(clictx *CLIContext) (err error) {
@@ -21,10 +20,6 @@ func (c *Parse) Run(clictx *CLIContext) (err error) {
 
 	cfg, err := f5.ParseFile(c.Files)
 	if err != nil {
-		return
-	}
-	if c.GenTemplates {
-		err = haproxy.GenerateTemplates(hap, cfg)
 		return
 	}
 	err = haproxy.Render(hap, cfg)
