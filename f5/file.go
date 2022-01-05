@@ -20,12 +20,13 @@ type ParsedConfig struct {
 
 type f5config map[string]F5Object
 type F5Config struct {
-	LtmNode    f5config
-	LtmPool    f5config
-	LtmVirtual f5config
-	LtmRule    f5config
-	LtmProfile f5config
-	LtmMonitor f5config
+	LtmNode        f5config
+	LtmPool        f5config
+	LtmVirtual     f5config
+	LtmRule        f5config
+	LtmProfile     f5config
+	LtmMonitor     f5config
+	LtmPersistence f5config
 }
 
 type DuplicatedConfigEntry struct {
@@ -74,17 +75,24 @@ func (c *F5Config) Merge(n F5Config) error {
 		}
 		c.LtmMonitor[k] = v
 	}
+	for k, v := range n.LtmPersistence {
+		if ok := c.LtmPersistence[k]; ok != nil {
+			return DuplicatedConfigEntry{entry: k, obj: "LtmPersistence"}
+		}
+		c.LtmPersistence[k] = v
+	}
 	return nil
 }
 
 func NewF5Config() F5Config {
 	return F5Config{
-		LtmNode:    f5config{},
-		LtmVirtual: f5config{},
-		LtmPool:    f5config{},
-		LtmRule:    f5config{},
-		LtmProfile: f5config{},
-		LtmMonitor: f5config{},
+		LtmNode:        f5config{},
+		LtmVirtual:     f5config{},
+		LtmPool:        f5config{},
+		LtmRule:        f5config{},
+		LtmProfile:     f5config{},
+		LtmMonitor:     f5config{},
+		LtmPersistence: f5config{},
 	}
 }
 
@@ -268,6 +276,13 @@ func parseFile(file string) (cfg F5Config, err error) {
 				continue
 			}
 			cfg.LtmMonitor[obj.Name] = obj
+		case strings.HasPrefix(o.Content, "ltm persistence ") || strings.HasPrefix(o.Content, "persistence "):
+			obj, e := newLtmPersistence(o)
+			if e != nil {
+				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
+				continue
+			}
+			cfg.LtmPersistence[obj.Name] = obj
 		}
 	}
 

@@ -70,7 +70,8 @@ func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 	}
 
 	t := tmpls.Lookup("export")
-	for _, tp := range []string{"rule", "profile", "node", "monitor"} {
+	for _, tp := range []string{"rule", "profile", "node", "monitor",
+		"persistence"} {
 		f5c := f5.NewF5Config()
 		switch tp {
 		case "rule":
@@ -81,6 +82,8 @@ func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 			f5c.LtmNode = f5config.LtmNode
 		case "monitor":
 			f5c.LtmMonitor = f5config.LtmMonitor
+		case "persistence":
+			f5c.LtmPersistence = f5config.LtmPersistence
 		}
 
 		fh, e := os.Create(fmt.Sprintf("%s/%s.cfg", config.OutputDir, tp))
@@ -116,6 +119,8 @@ func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 					f5c.LtmNode = f5config.LtmNode
 				case "monitor":
 					f5c.LtmMonitor = f5config.LtmMonitor
+				case "persistence":
+					f5c.LtmPersistence = f5config.LtmPersistence
 				}
 			}
 		}
