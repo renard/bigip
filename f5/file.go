@@ -25,6 +25,7 @@ type F5Config struct {
 	LtmVirtual f5config
 	LtmRule    f5config
 	LtmProfile f5config
+	LtmMonitor f5config
 }
 
 type DuplicatedConfigEntry struct {
@@ -67,6 +68,12 @@ func (c *F5Config) Merge(n F5Config) error {
 		}
 		c.LtmProfile[k] = v
 	}
+	for k, v := range n.LtmMonitor {
+		if ok := c.LtmMonitor[k]; ok != nil {
+			return DuplicatedConfigEntry{entry: k, obj: "LtmMonitor"}
+		}
+		c.LtmMonitor[k] = v
+	}
 	return nil
 }
 
@@ -77,6 +84,7 @@ func NewF5Config() F5Config {
 		LtmPool:    f5config{},
 		LtmRule:    f5config{},
 		LtmProfile: f5config{},
+		LtmMonitor: f5config{},
 	}
 }
 
@@ -253,6 +261,13 @@ func parseFile(file string) (cfg F5Config, err error) {
 				continue
 			}
 			cfg.LtmProfile[obj.Name] = obj
+		case strings.HasPrefix(o.Content, "ltm monitor ") || strings.HasPrefix(o.Content, "monitor "):
+			obj, e := newLtmMonitor(o)
+			if e != nil {
+				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
+				continue
+			}
+			cfg.LtmMonitor[obj.Name] = obj
 		}
 	}
 

@@ -138,6 +138,8 @@ func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 				f5c.LtmProfile = f5config.LtmProfile
 			case "node":
 				f5c.LtmNode = f5config.LtmNode
+			case "monitor":
+				f5c.LtmMonitor = f5config.LtmMonitor
 			}
 		}
 	}
