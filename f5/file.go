@@ -3,6 +3,7 @@ package f5
 import (
 	"fmt"
 	"io/ioutil"
+	"reflect"
 	"strings"
 
 	"github.com/alecthomas/repr"
@@ -38,49 +39,30 @@ func (e DuplicatedConfigEntry) Error() string {
 	return fmt.Sprintf("Duplicated config Entry: %s", e.entry)
 }
 
+// Merge meges F5config n into c and returns DuplicatedConfigEntry if
+// an entry from n is already defined in c.
+//
+// For each F5Config field, it loop over all entries from n and insert
+// them into n ad a new entry.
 func (c *F5Config) Merge(n F5Config) error {
-	for k, v := range n.LtmNode {
-		if ok := c.LtmNode[k]; ok != nil {
-			return DuplicatedConfigEntry{entry: k, obj: "LtmNode"}
+	// Define reflection for both c and n
+	refc := reflect.Indirect(reflect.ValueOf(c))
+	refn := reflect.Indirect(reflect.ValueOf(n))
+	// Loop over each F5Config struct fields
+	for i := 0; i < refc.NumField(); i++ {
+		field := refc.Type().Field(i).Name
+		// Assign a variable (type f5config) to each structure field
+		mapc := refc.FieldByName(field).Interface().(f5config)
+		mapn := refn.FieldByName(field).Interface().(f5config)
+		// Copy data from n to c
+		for k, v := range mapn {
+			if ok := mapc[k]; ok != nil {
+				return DuplicatedConfigEntry{entry: k, obj: field}
+			}
+			mapc[k] = v
 		}
-		c.LtmNode[k] = v
 	}
-	for k, v := range n.LtmPool {
-		if ok := c.LtmPool[k]; ok != nil {
-			return DuplicatedConfigEntry{entry: k, obj: "LtmPool"}
-		}
-		c.LtmPool[k] = v
-	}
-	for k, v := range n.LtmVirtual {
-		if ok := c.LtmVirtual[k]; ok != nil {
-			return DuplicatedConfigEntry{entry: k, obj: "LtmVirtual"}
-		}
-		c.LtmVirtual[k] = v
-	}
-	for k, v := range n.LtmRule {
-		if ok := c.LtmRule[k]; ok != nil {
-			return DuplicatedConfigEntry{entry: k, obj: "LtmRule"}
-		}
-		c.LtmRule[k] = v
-	}
-	for k, v := range n.LtmProfile {
-		if ok := c.LtmProfile[k]; ok != nil {
-			return DuplicatedConfigEntry{entry: k, obj: "LtmProfile"}
-		}
-		c.LtmProfile[k] = v
-	}
-	for k, v := range n.LtmMonitor {
-		if ok := c.LtmMonitor[k]; ok != nil {
-			return DuplicatedConfigEntry{entry: k, obj: "LtmMonitor"}
-		}
-		c.LtmMonitor[k] = v
-	}
-	for k, v := range n.LtmPersistence {
-		if ok := c.LtmPersistence[k]; ok != nil {
-			return DuplicatedConfigEntry{entry: k, obj: "LtmPersistence"}
-		}
-		c.LtmPersistence[k] = v
-	}
+
 	return nil
 }
 
