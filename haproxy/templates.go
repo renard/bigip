@@ -103,35 +103,5 @@ func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 		}
 		fh.Close()
 	}
-
-	if false {
-		f5c := f5.NewF5Config()
-		if len(config.Export) == 0 {
-			f5c = f5config
-		} else {
-			for _, f := range config.Export {
-				switch f {
-				case "rule":
-					f5c.LtmRule = f5config.LtmRule
-				case "profile":
-					f5c.LtmProfile = f5config.LtmProfile
-				case "node":
-					f5c.LtmNode = f5config.LtmNode
-				case "monitor":
-					f5c.LtmMonitor = f5config.LtmMonitor
-				case "persistence":
-					f5c.LtmPersistence = f5config.LtmPersistence
-				}
-			}
-		}
-		//t := tmpls.Lookup("export")
-		err = t.Execute(os.Stdout, struct {
-			F5config f5.F5Config
-			Config   Config
-		}{
-			F5config: f5c,
-			Config:   *config,
-		})
-	}
 	return
 }
