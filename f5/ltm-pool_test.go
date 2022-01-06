@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	//go:embed testdata/ltm-pool-*.cfg
+	//go:embed testdata/ltm-pool-*.conf
 	testsLtmPool embed.FS
 )
 

@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	//go:embed testdata/ltm-rule-*.cfg
+	//go:embed testdata/ltm-rule-*.conf
 	testsLtmRule embed.FS
 )
 

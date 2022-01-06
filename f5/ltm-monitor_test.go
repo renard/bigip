@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	//go:embed testdata/ltm-monitor-*.cfg
+	//go:embed testdata/ltm-monitor-*.conf
 	testsLtmMonitor embed.FS
 )
 

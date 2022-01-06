@@ -10,7 +10,7 @@ func getFiles(fsys fs.FS) (paths []string) {
 		if d.IsDir() {
 			return nil
 		}
-		if filepath.Ext(path) != ".cfg" {
+		if filepath.Ext(path) != ".conf" {
 			return nil
 		}
 		paths = append(paths, path)

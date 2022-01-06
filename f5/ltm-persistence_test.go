@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	//go:embed testdata/ltm-persistence-*.cfg
+	//go:embed testdata/ltm-persistence-*.conf
 	testsLtmPersistence embed.FS
 )
 

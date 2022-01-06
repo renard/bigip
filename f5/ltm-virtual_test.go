@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	//go:embed testdata/ltm-virtual-*.cfg
+	//go:embed testdata/ltm-virtual-*.conf
 	testsLtmVirtual embed.FS
 )
 
