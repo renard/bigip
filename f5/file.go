@@ -11,6 +11,7 @@ import (
 
 type F5Object interface {
 	Original() string
+	GetName() string
 }
 
 type ParsedConfig struct {
@@ -215,57 +216,39 @@ func parseFile(file string) (cfg F5Config, err error) {
 	lines := 0
 	for _, o := range pc {
 		lines += len(o.Content)
+		var (
+			dest f5config
+			obj  F5Object
+			e    error
+		)
 		switch {
 		case strings.HasPrefix(o.Content, "ltm node ") || strings.HasPrefix(o.Content, "node "):
-			obj, e := newLtmNode(o)
-			if e != nil {
-				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
-				continue
-			}
-			cfg.LtmNode[obj.Name] = obj
+			obj, e = newLtmNode(o)
+			dest = cfg.LtmNode
 		case strings.HasPrefix(o.Content, "ltm pool ") || strings.HasPrefix(o.Content, "pool "):
-			obj, e := newLtmPool(o)
-			if e != nil {
-				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
-				continue
-			}
-			cfg.LtmPool[obj.Name] = obj
+			obj, e = newLtmPool(o)
+			dest = cfg.LtmPool
 		case strings.HasPrefix(o.Content, "ltm virtual ") || strings.HasPrefix(o.Content, "virtual "):
-			obj, e := newLtmVirtual(o)
-			if e != nil {
-				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
-				continue
-			}
-			cfg.LtmVirtual[obj.Name] = obj
+			obj, e = newLtmVirtual(o)
+			dest = cfg.LtmVirtual
 		case strings.HasPrefix(o.Content, "ltm rule ") || strings.HasPrefix(o.Content, "rule "):
-			obj, e := newLtmRule(o)
-			if e != nil {
-				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
-				continue
-			}
-			cfg.LtmRule[obj.Name] = obj
+			obj, e = newLtmRule(o)
+			dest = cfg.LtmRule
 		case strings.HasPrefix(o.Content, "ltm profile ") || strings.HasPrefix(o.Content, "profile "):
-			obj, e := newLtmProfile(o)
-			if e != nil {
-				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
-				continue
-			}
-			cfg.LtmProfile[obj.Name] = obj
+			obj, e = newLtmProfile(o)
+			dest = cfg.LtmProfile
 		case strings.HasPrefix(o.Content, "ltm monitor ") || strings.HasPrefix(o.Content, "monitor "):
-			obj, e := newLtmMonitor(o)
-			if e != nil {
-				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
-				continue
-			}
-			cfg.LtmMonitor[obj.Name] = obj
+			obj, e = newLtmMonitor(o)
+			dest = cfg.LtmMonitor
 		case strings.HasPrefix(o.Content, "ltm persistence ") || strings.HasPrefix(o.Content, "persistence "):
-			obj, e := newLtmPersistence(o)
-			if e != nil {
-				fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
-				continue
-			}
-			cfg.LtmPersistence[obj.Name] = obj
+			obj, e = newLtmPersistence(o)
+			dest = cfg.LtmPersistence
 		}
+		if e != nil {
+			fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
+			continue
+		}
+		dest[obj.GetName()] = obj
 	}
 
 	if false {

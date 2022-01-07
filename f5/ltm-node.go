@@ -44,3 +44,7 @@ func newLtmNode(data ParsedConfig) (ret *LtmNode, err error) {
 func (o *LtmNode) Original() string {
 	return o.OriginalConfig.Content
 }
+
+func (o *LtmNode) GetName() string {
+	return o.Name
+}

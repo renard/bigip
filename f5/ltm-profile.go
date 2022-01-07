@@ -26,3 +26,7 @@ func newLtmProfile(data ParsedConfig) (ret *LtmProfile, err error) {
 func (o *LtmProfile) Original() string {
 	return o.OriginalConfig.Content
 }
+
+func (o *LtmProfile) GetName() string {
+	return o.Name
+}

@@ -92,3 +92,7 @@ func newLtmVirtual(data ParsedConfig) (ret *LtmVirtual, err error) {
 func (o *LtmVirtual) Original() string {
 	return o.OriginalConfig.Content
 }
+
+func (o *LtmVirtual) GetName() string {
+	return o.Name
+}

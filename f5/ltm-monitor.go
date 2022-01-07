@@ -69,3 +69,7 @@ func newLtmMonitor(data ParsedConfig) (ret *LtmMonitor, err error) {
 func (o *LtmMonitor) Original() string {
 	return o.OriginalConfig.Content
 }
+
+func (o *LtmMonitor) GetName() string {
+	return o.Name
+}

@@ -25,3 +25,7 @@ func newLtmRule(data ParsedConfig) (ret *LtmRule, err error) {
 func (o *LtmRule) Original() string {
 	return o.OriginalConfig.Content
 }
+
+func (o *LtmRule) GetName() string {
+	return o.Name
+}

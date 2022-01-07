@@ -26,3 +26,7 @@ func newLtmPersistence(data ParsedConfig) (ret *LtmPersistence, err error) {
 func (o *LtmPersistence) Original() string {
 	return o.OriginalConfig.Content
 }
+
+func (o *LtmPersistence) GetName() string {
+	return o.Name
+}

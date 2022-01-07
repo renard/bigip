@@ -66,3 +66,7 @@ func newLtmPool(data ParsedConfig) (ret *LtmPool, err error) {
 func (o *LtmPool) Original() string {
 	return o.OriginalConfig.Content
 }
+
+func (o *LtmPool) GetName() string {
+	return o.Name
+}
