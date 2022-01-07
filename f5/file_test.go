@@ -1,8 +1,16 @@
 package f5
 
 import (
+	"embed"
 	"reflect"
 	"testing"
+
+	"github.com/alecthomas/repr"
+)
+
+var (
+	//go:embed testdata/bigip-*.conf
+	testsF5config embed.FS
 )
 
 func TestMerge(t *testing.T) {
@@ -26,4 +34,17 @@ func TestMerge(t *testing.T) {
 	if !reflect.DeepEqual(c1, c3) {
 		t.Errorf("Failed to merge F5 configuration")
 	}
+}
+
+func TestParse(t *testing.T) {
+	files := getFiles(testsF5config)
+	repr.Println(files)
+	cfg, err := ParseFile(files)
+	if err != nil {
+		t.Errorf("Cannot parse files: %s", err)
+	}
+	if false || true {
+		repr.Println(cfg)
+	}
+	repr.Println(cfg.Info())
 }
