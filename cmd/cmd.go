@@ -13,7 +13,7 @@ type CLIContext struct {
 
 var CLI struct {
 	CLIContext
-	Parse        Parse        `cmd help:"Parse config"`
+	Convert      Convert      `cmd help:"Convert F5 configuration"`
 	GenTemplates GenTemplates `cmd help:"Generate block configuration templates"`
 	// Merge   Merge   `cmd help:"Merge SQLite results"`
 	// Graph   Graph   `cmd help:"Graph bench results"`

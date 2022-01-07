@@ -6,12 +6,12 @@ import (
 	"bigip/internal/log"
 )
 
-type Parse struct {
+type Convert struct {
 	Templates []string `short:"t" help:"Custom template directory" type:"string"`
 	Files     []string `arg help:"Configuration files" type:"string"`
 }
 
-func (c *Parse) Run(clictx *CLIContext) (err error) {
+func (c *Convert) Run(clictx *CLIContext) (err error) {
 	log.Debug("Parsing configuration files %#v", c.Files)
 
 	hap := &haproxy.Config{
