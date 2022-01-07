@@ -14,10 +14,14 @@ type F5Object interface {
 	GetName() string
 }
 
+// ParsedConfig containts basic inforation of a parsed block
 type ParsedConfig struct {
+	// Original block content
 	Content string
-	Lines   [2]int
-	File    string
+	// Begin and end lines of block in File
+	Lines [2]int
+	// File where block is defined
+	File string
 }
 
 type f5config map[string]F5Object
@@ -237,7 +241,10 @@ func parseFile(file string) (cfg F5Config, err error) {
 			fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
 			continue
 		}
-		dest[obj.GetName()] = obj
+		if obj != nil {
+			dest[obj.GetName()] = obj
+			obj = nil
+		}
 	}
 
 	if false {
