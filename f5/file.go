@@ -100,6 +100,8 @@ func NewF5Config() F5Config {
 //  <0 there are less opening bbraces than closing
 func countBraces(line string) (count int) {
 	count = 0
+	// simple_quote := false
+	// double_quote := false
 	for _, c := range line {
 		switch c {
 		// case '\'':
@@ -113,32 +115,6 @@ func countBraces(line string) (count int) {
 			count += 1
 		case '}':
 			count -= 1
-		}
-	}
-	return
-}
-
-func countBraces2(line string) (count int) {
-	count = 0
-	simple_quote := false
-	double_quote := false
-	for _, c := range line {
-		switch c {
-		case '\'':
-			simple_quote = !simple_quote
-		case '"':
-			double_quote = !double_quote
-		// Do not include braces in comments
-		case '#':
-			return
-		case '{':
-			if !simple_quote && !double_quote {
-				count += 1
-			}
-		case '}':
-			if !simple_quote && !double_quote {
-				count -= 1
-			}
 		}
 	}
 	return
