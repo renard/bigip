@@ -40,6 +40,19 @@ func (e DuplicatedConfigEntry) Error() string {
 	return fmt.Sprintf("Duplicated config Entry: %s", e.entry)
 }
 
+// Info returns the number of objects of all F5Config fields. This is
+// mainly for debuging purposes.
+func (c *F5Config) Info() string {
+	refc := reflect.Indirect(reflect.ValueOf(c))
+	ret := make([]string, refc.NumField())
+	for i := 0; i < refc.NumField(); i++ {
+		field := refc.Type().Field(i).Name
+		mapc := refc.FieldByName(field).Interface().(f5config)
+		ret[i] = fmt.Sprintf("%d %s", len(mapc), field)
+	}
+	return strings.Join(ret, ", ")
+}
+
 // Merge meges F5config n into c and returns DuplicatedConfigEntry if
 // an entry from n is already defined in c.
 //
