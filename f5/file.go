@@ -24,6 +24,17 @@ type ParsedConfig struct {
 	File string
 }
 
+// MatchPrefix checks that Content field of ParsedConfig matches at
+// least one of the give prefixes.
+func (c *ParsedConfig) MatchPrefix(prefixes ...string) bool {
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(c.Content, prefix) {
+			return true
+		}
+	}
+	return false
+}
+
 type f5config map[string]F5Object
 type F5Config struct {
 	LtmNode        f5config
@@ -192,17 +203,6 @@ func ParseFile(files []string) (cfg F5Config, err error) {
 		}
 	}
 	return
-}
-
-// MatchPrefix checks that Content field of ParsedConfig matches at
-// least one of the give prefixes.
-func (c *ParsedConfig) MatchPrefix(prefixes ...string) bool {
-	for _, prefix := range prefixes {
-		if strings.HasPrefix(c.Content, prefix) {
-			return true
-		}
-	}
-	return false
 }
 
 // ParseFile read and split file.
