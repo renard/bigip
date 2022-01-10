@@ -169,10 +169,27 @@ func parseLines(file, content string) (pc []ParsedConfig, err error) {
 			pc = append(pc, ParsedConfig{
 				Content: strings.Join(tmp, "\n"),
 				File:    file,
-				// Why?
+				// i is the line number. Since loop index starts at 0 and line
+				// number starts at 1, we should add 1 to loop index.
+				//
+				// Last line is then i + 1.
+				//
+				// l is the block lines number. Since it counts the actual
+				// line numbers we need to substract l - 1 from the last line
+				// to reach the first line of the block.
+				//
+				// The first line number is then: ( i + 1 ) - ( l - 1 ), which
+				// is in fact: i - l + 2
+				//
+				//    line  | i    | l  |
+				//    100   | 99   | 1  | This is a
+				//    101   | 100  | 2  | multi-line
+				//    102   | 101  | 3  | match
+				//
+				// 102 = 101 + 1 (last line)
+				// 100 = 101 + 1 - ( 3 - 1)  = 101 - 3 + 2 = 100 (first line)
 				Lines: [2]int{i - l + 2, i + 1},
 			})
-
 			retCur += 1
 			tmp = tmp[:0]
 		case opened < 0:
