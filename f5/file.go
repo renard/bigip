@@ -194,6 +194,17 @@ func ParseFile(files []string) (cfg F5Config, err error) {
 	return
 }
 
+// MatchPrefix checks that Content field of ParsedConfig matches at
+// least one of the give prefixes.
+func (c *ParsedConfig) MatchPrefix(prefixes ...string) bool {
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(c.Content, prefix) {
+			return true
+		}
+	}
+	return false
+}
+
 // ParseFile read and split file.
 func parseFile(file string) (cfg F5Config, err error) {
 
@@ -215,25 +226,25 @@ func parseFile(file string) (cfg F5Config, err error) {
 			e    error
 		)
 		switch {
-		case strings.HasPrefix(o.Content, "ltm node ") || strings.HasPrefix(o.Content, "node "):
+		case o.MatchPrefix("ltm node ", "node "):
 			obj, e = newLtmNode(o)
 			dest = cfg.LtmNode
-		case strings.HasPrefix(o.Content, "ltm pool ") || strings.HasPrefix(o.Content, "pool "):
+		case o.MatchPrefix("ltm pool ", "pool "):
 			obj, e = newLtmPool(o)
 			dest = cfg.LtmPool
-		case strings.HasPrefix(o.Content, "ltm virtual ") || strings.HasPrefix(o.Content, "virtual "):
+		case o.MatchPrefix("ltm virtual ", "virtual "):
 			obj, e = newLtmVirtual(o)
 			dest = cfg.LtmVirtual
-		case strings.HasPrefix(o.Content, "ltm rule ") || strings.HasPrefix(o.Content, "rule "):
+		case o.MatchPrefix("ltm rule ", "rule "):
 			obj, e = newLtmRule(o)
 			dest = cfg.LtmRule
-		case strings.HasPrefix(o.Content, "ltm profile ") || strings.HasPrefix(o.Content, "profile "):
+		case o.MatchPrefix("ltm profile ", "profile "):
 			obj, e = newLtmProfile(o)
 			dest = cfg.LtmProfile
-		case strings.HasPrefix(o.Content, "ltm monitor ") || strings.HasPrefix(o.Content, "monitor "):
+		case o.MatchPrefix("ltm monitor ", "monitor "):
 			obj, e = newLtmMonitor(o)
 			dest = cfg.LtmMonitor
-		case strings.HasPrefix(o.Content, "ltm persistence ") || strings.HasPrefix(o.Content, "persistence "):
+		case o.MatchPrefix("ltm persistence ", "persistence "):
 			obj, e = newLtmPersistence(o)
 			dest = cfg.LtmPersistence
 		}
