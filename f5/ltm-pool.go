@@ -8,7 +8,7 @@ import (
 type LtmPool struct {
 	OriginalConfig         ParsedConfig
 	Pos                    lexer.Position
-	Name                   string           `("ltm" "pool" ( @F5Name | @QF5Name ) | "pool" ( @F5Name | @QF5Name | @Ident)) "{"` // + version 10.x
+	Name                   string           `("ltm" "pool" ( @F5Name | @QF5Name | @Ident ) | "pool" ( @F5Name | @QF5Name | @Ident)) "{"` // + version 10.x
 	AllowNat               string           `(  "allow-nat" @( "yes" | "no" )`
 	AllowSnat              string           ` | "allow-snat" @( "yes" | "no" )`
 	AppService             string           ` | "app-service" @( "none" | QString | Ident )`
@@ -22,7 +22,7 @@ type LtmPool struct {
 	MinUpMembers           int              ` | "min-up-members" @Ident`
 	MinUpMembersAction     string           ` | "min-up-members-action" @Ident`
 	MinUpMembersChecking   string           ` | "min-up-members-checking" @Ident`
-	Monitor                []string         ` | ("monitor" ( ( "min" Ident "of" "{" @( F5Name | QF5Name ) ("and"? @(F5Name | QF5Name) )* "}" ) | @( "none" | F5Name | QF5Name ) ("and"? @(F5Name | QF5Name ) )* )) | ( "monitor" "all" @( Ident ) ("and" @( Ident ) )*  )` // all and indent for v10.x
+	Monitor                []string         ` | ("monitor" ( ( "min" Ident "of" "{" @( F5Name | QF5Name ) ("and"? @(F5Name | QF5Name) )* "}" ) | @( "none" | F5Name | QF5Name | (?!"all") Ident ) ("and"? @(F5Name | QF5Name | Ident) )* )) | ( "monitor" "all" @( Ident ) ("and" @( Ident ) )*  )` // all and indent for v10.x |  (?!"all") Ident -> do not match all ...
 	Profiles               string           ` | "profiles" @( "none" | @F5Name | @QF5Name )`
 	QueueOnConnectionLimit string           ` | "queue-on-connection-limit" @( "enabled" | "disabled" )`
 	QueueDepthLimit        int              ` | "queue-depth-limit" @Ident`
@@ -45,8 +45,8 @@ type LtmPoolMember struct {
 	PriorityGroup   string       ` | "priority-group" @( "none" | Ident )`
 	RateLimit       int          ` | "rate-limit" @Ident`
 	Ratio           int          ` | "ratio" @Ident`
-	Session         string       ` | "session" @( "user-enabled" | "user-disabled" | "user" "disabled")`
-	State           string       ` | "state" @( "user-up" | "user-down" )`
+	Session         string       ` | "session" @( "user-enabled" | "user-disabled" | "user" "disabled" | "monitor-enabled")`
+	State           string       ` | "state" @( "user-up" | "user-down" | "down" | "up")`
 	FQDN            *LtmPoolFQDN ` | "fqdn" "{" @@ "}" )* "}"`
 }
 

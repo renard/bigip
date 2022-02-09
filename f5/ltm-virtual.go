@@ -6,36 +6,41 @@ import (
 
 // See https://clouddocs.f5.com/cli/tmsh-reference/latest/modules/ltm/ltm_virtual.html
 type LtmVirtual struct {
-	OriginalConfig           ParsedConfig
-	Pos                      lexer.Position
-	Name                     string                                `("ltm" "virtual" @(F5Name | QF5Name ) | "virtual" "address"? @(F5Name | QF5Name | Ident)) "{"`
-	Description              string                                `( "description" @( QString | Ident )`
-	AddressStatus            string                                ` | "address-status" @( "yes" | "no" )`
-	AppService               string                                ` | "app-service" @( "none" | QString | Ident )`
-	AutoDiscovery            string                                ` | "auto-discovery" @("enabled" | "disabled")`
-	AutoLasthop              string                                ` | "auto-lasthop" @( "default" | "enabled" | "disabled")`
-	BwcPolicy                string                                ` | "bwc-policy" @( F5Name | QF5Name )` // OLD Devices?
-	ConnectionLimit          int                                   ` | "connection-limit" @( Ident )`      // OLD Devices?
-	ClonePools               []*LtmVirtualClonePool                ` | "clone-pools" "{" @@+ "}"`
-	Destination              string                                ` | "destination" @( F5Name | QF5Name | Ident )`
-	Enabled                  string                                ` | @( "enabled" | "disabled" | "disable" )`
-	FallbackPersistence      string                                ` | "fallback-persistence" @( F5Name | QF5Name )`
-	IpProtocol               string                                ` | ("ip-protocol" | "ip" "protocol") @( "any" | "udp" | "tcp" )`
-	Mask                     string                                ` | "mask" @Ident`
-	Pool                     string                                ` | "pool" @( F5Name | QF5Name | Ident )`
-	Persist                  []*LtmVirtualPersist                  ` | "persist" "{" @@+ "}"`
-	PersistOLD               string                                ` | "persist" @Ident`
-	Profiles                 []*LtmVirtualProfile                  ` | "profiles" "{" @@+ "}"`
-	Policies                 []*LtmVirtualPolicy                   ` | "policies" "{" @@+ "}"`
-	Rules                    []string                              ` | "rules" ( "{" @( QF5Name | F5Name | Ident)+ "}" | @( QF5Name | F5Name | Ident) )`
-	SecurityLogProfiles      []string                              ` | "security-log-profiles" "{" @(Ident | QF5Name | F5Name | QString)* "}"` // OLD Devices?
-	Source                   string                                ` | "source" @Ident`
-	SourcePort               string                                ` | "source-port" @Ident`
-	SourceAddressTranslation []*LtmVirtualSourceAddressTranslation ` | "source-address-translation" "{" @@ "}"`
-	Translate                string                                ` | "translate" "service" @( "enable" | "disable")` // OLD device
-	TranslateAddress         string                                ` | "translate-address" @( "enabled" | "disabled")`
-	TranslatePort            string                                ` | "translate-port" @( "enabled" | "disabled")`
-	Metadata                 []*LtmVirtualMetadata                 ` | "metadata" "{" @@* "}"`
+	OriginalConfig             ParsedConfig
+	Pos                        lexer.Position
+	Name                       string                                `("ltm" "virtual" @(F5Name | QF5Name | Ident ) | "virtual" "address"? @(F5Name | QF5Name | Ident)) "{"`
+	Description                string                                `( "description" @( QString | Ident )`
+	AddressStatus              string                                ` | "address-status" @( "yes" | "no" )`
+	AppService                 string                                ` | "app-service" @( "none" | QString | Ident )`
+	AutoDiscovery              string                                ` | "auto-discovery" @("enabled" | "disabled")`
+	AutoLasthop                string                                ` | "auto-lasthop" @( "default" | "enabled" | "disabled")`
+	BwcPolicy                  string                                ` | "bwc-policy" @( F5Name | QF5Name )` // OLD Devices?
+	ConnectionLimit            int                                   ` | "connection-limit" @( Ident )`      // OLD Devices?
+	ClonePools                 []*LtmVirtualClonePool                ` | "clone-pools" "{" @@+ "}"`
+	Destination                string                                ` | "destination" @( F5Name | QF5Name | Ident )`
+	Enabled                    string                                ` | @( "enabled" | "disabled" | "disable" )`
+	FallbackPersistence        string                                ` | "fallback-persistence" @( F5Name | QF5Name )`
+	IpProtocol                 string                                ` | ("ip-protocol" | "ip" "protocol") @( "any" | "udp" | "tcp" )`
+	Mask                       string                                ` | "mask" @Ident`
+	Pool                       string                                ` | "pool" @( F5Name | QF5Name | Ident )`
+	Persist                    []*LtmVirtualPersist                  ` | "persist" "{" @@+ "}"`
+	PersistOLD                 string                                ` | "persist" @Ident`
+	Profiles                   []*LtmVirtualProfile                  ` | "profiles" "{" @@+ "}"`
+	Policies                   []*LtmVirtualPolicy                   ` | "policies" "{" @@+ "}"`
+	Rules                      []string                              ` | "rules" ( "{" @( QF5Name | F5Name | Ident)+ "}" | @( QF5Name | F5Name | Ident) )`
+	SecurityLogProfiles        []string                              ` | "security-log-profiles" "{" @(Ident | QF5Name | F5Name | QString)* "}"` // OLD Devices?
+	ServerSSLUseSNI            string                                ` | "serverssl-use-sni"  @( Ident )`                                        // OLD Devices?
+	ServiceDownImmediateAction string                                ` | "service-down-immediate-action"  @( Ident )`                            // OLD Devices?
+	Source                     string                                ` | "source" @Ident`
+	SourcePort                 string                                ` | "source-port" @Ident`
+	SourceAddressTranslation   []*LtmVirtualSourceAddressTranslation ` | "source-address-translation" "{" @@ "}"`
+	Translate                  string                                ` | "translate" "service" @( "enable" | "disable")` // OLD device
+	TranslateAddress           string                                ` | "translate-address" @( "enabled" | "disabled")`
+	TranslatePort              string                                ` | "translate-port" @( "enabled" | "disabled")`
+	Vlans                      []string                              ` | "vlans" "{" @(Ident | QF5Name | F5Name | QString)* "}"` // OLD Devices?
+	VlansEnabled               *bool                                 ` | @"vlans-enabled"`                                       // OLD Devices?
+	VsIndex                    int                                   ` | "vs-index" @Ident`                                      // OLD Devices?
+	Metadata                   []*LtmVirtualMetadata                 ` | "metadata" "{" @@* "}"`
 	// Address         string          ` | "address" @Ident`
 	// ConnectionLimit int             ` | "connection-limit" @Ident`
 	// Status          string          ` | @( "up" | "down" )`
@@ -58,7 +63,7 @@ type LtmVirtualMetadata struct {
 }
 
 type LtmVirtualPersist struct {
-	Name    string `@( F5Name | QF5Name ) "{"`
+	Name    string `@( F5Name | QF5Name | Ident ) "{"`
 	Default string `("default" @( "yes" | "no" ) )? "}"`
 }
 
@@ -77,7 +82,7 @@ type LtmVirtualProfile struct {
 }
 
 type LtmVirtualSourceAddressTranslation struct {
-	Pool string `(  "pool" @( "none" | F5Name | QF5Name )`
+	Pool string `(  "pool" @( "none" | F5Name | QF5Name | Ident )`
 	Type string ` | "type" @( "automap" | "lsn" | "snat" | "none" ))+`
 }
 
