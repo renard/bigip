@@ -20,7 +20,7 @@ func TestLtmVirtual(t *testing.T) {
 		if err != nil {
 			t.Errorf("%s Cannot parse virtual snippet: %s", file, err)
 		}
-		if false {
+		if true || false {
 			repr.Println(obj)
 		}
 	}
