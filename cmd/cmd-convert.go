@@ -9,6 +9,7 @@ import (
 type Convert struct {
 	Templates []string `short:"t" help:"Custom template directory" type:"string"`
 	Files     []string `arg help:"Configuration files" type:"string"`
+	OutputDir string   `short:"o" help:"Output directory" default:"-" type:"string"`
 }
 
 func (c *Convert) Run(clictx *CLIContext) (err error) {
@@ -18,6 +19,7 @@ func (c *Convert) Run(clictx *CLIContext) (err error) {
 		Files:           c.Files,
 		TemplateDir:     c.Templates,
 		ExpandTemplates: true,
+		OutputDir:       c.OutputDir,
 	}
 
 	cfg, err := f5.ParseFile(c.Files)
