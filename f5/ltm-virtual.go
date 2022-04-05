@@ -11,7 +11,7 @@ type LtmVirtual struct {
 	Name                       string                                `("ltm" "virtual" @(F5Name | QF5Name | Ident ) | "virtual" "address"? @(F5Name | QF5Name | Ident)) "{"`
 	Description                string                                `( "description" @( QString | Ident )`
 	AddressStatus              string                                ` | "address-status" @( "yes" | "no" )`
-	AppService                 string                                ` | "app-service" @( "none" | QString | Ident )`
+	AppService                 string                                ` | "app-service" @( "none" | QString | F5Name | QF5Name | Ident )`
 	AutoDiscovery              string                                ` | "auto-discovery" @("enabled" | "disabled")`
 	AutoLasthop                string                                ` | "auto-lasthop" @( "default" | "enabled" | "disabled")`
 	BwcPolicy                  string                                ` | "bwc-policy" @( F5Name | QF5Name )` // OLD Devices?

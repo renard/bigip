@@ -11,7 +11,7 @@ type LtmPool struct {
 	Name                   string           `("ltm" "pool" ( @F5Name | @QF5Name | @Ident ) | "pool" ( @F5Name | @QF5Name | @Ident)) "{"` // + version 10.x
 	AllowNat               string           `(  "allow-nat" @( "yes" | "no" )`
 	AllowSnat              string           ` | "allow-snat" @( "yes" | "no" )`
-	AppService             string           ` | "app-service" @( "none" | QString | Ident )`
+	AppService             string           ` | "app-service" @( "none" | QString | F5Name | QF5Name | Ident )`
 	AutoscaleGroupID       string           ` | "autoscale-group-id" @( "none" | QString | Ident )`
 	Description            string           ` | "description" @( QString | Ident )`
 	GatewayFailsafeDevice  string           ` | "gateway-failsafe-device" @( QString | Ident )`
@@ -35,7 +35,7 @@ type LtmPool struct {
 type LtmPoolMember struct {
 	Name            string       `@(F5Name | QF5Name | Ident) "{"`
 	Address         string       ` ( "address" @Ident`
-	AppService      string       ` | "app-service" @( "none" | QString | Ident )`
+	AppService      string       ` | "app-service" @( "none" | QString | F5Name | QF5Name | Ident )`
 	ConnectionLimit int          ` | "connection-limit" @Ident`
 	Description     string       ` | "description" @( QString | Ident )`
 	DynamicRatio    int          ` | "dynamic-ratio" @Ident`
