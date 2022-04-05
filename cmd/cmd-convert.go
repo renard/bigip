@@ -15,7 +15,9 @@ func (c *Convert) Run(clictx *CLIContext) (err error) {
 	log.Debug("Parsing configuration files %#v", c.Files)
 
 	hap := &haproxy.Config{
-		TemplateDir: c.Templates,
+		Files:           c.Files,
+		TemplateDir:     c.Templates,
+		ExpandTemplates: true,
 	}
 
 	cfg, err := f5.ParseFile(c.Files)

@@ -2,6 +2,7 @@ package haproxy
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"text/template"
 
@@ -31,6 +32,11 @@ func indent(str string, indent int) string {
 	return strings.Join(lines, "\n")
 }
 
+func split(str, sep string) []string {
+	strs := strings.Split(str, sep)
+	return strs
+}
+
 func stripport(str string) string {
 	strs := strings.Split(str, ":")
 	return strs[0]
@@ -48,6 +54,7 @@ func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 		"scomment":  spacedComment,
 		"indent":    indent,
 		"stripport": stripport,
+		"split":     split,
 		"ipport":    ipport,
 		// https://forum.golangbridge.org/t/template-check-if-block-is-defined/6928/2
 		"hasTemplate": func(name string) bool {
@@ -68,6 +75,9 @@ func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 			return buf.String(), nil
 		},
 		"templateIndent": func(level int, name string, pipeline interface{}) (string, error) {
+			if !config.ExpandTemplates && level > 0 {
+				return fmt.Sprintf(`{{   templateIndent %d "%s" "%s" }}`, level, name, pipeline), nil
+			}
 			t := tmpls.Lookup(name)
 			if t == nil {
 				return "", err

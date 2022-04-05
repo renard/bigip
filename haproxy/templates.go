@@ -19,9 +19,11 @@ var (
 )
 
 type Config struct {
-	TemplateDir []string
-	Export      []string
-	OutputDir   string
+	Files           []string
+	TemplateDir     []string
+	Export          []string
+	OutputDir       string
+	ExpandTemplates bool
 }
 
 func addExtraTemplates(t *template.Template, dir string) (err error) {
@@ -70,10 +72,14 @@ func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 	}
 
 	t := tmpls.Lookup("export")
-	for _, tp := range []string{"rule", "profile", "node", "monitor",
+	for _, tp := range []string{"virtual", "pool", "rule", "profile", "node", "monitor",
 		"persistence"} {
 		f5c := f5.NewF5Config()
 		switch tp {
+		case "virtual":
+			f5c.LtmVirtual = f5config.LtmVirtual
+		case "pool":
+			f5c.LtmPool = f5config.LtmPool
 		case "rule":
 			f5c.LtmRule = f5config.LtmRule
 		case "profile":
