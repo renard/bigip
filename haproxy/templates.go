@@ -49,8 +49,14 @@ func Render(config *Config, f5config f5.F5Config) (err error) {
 		repr.Println(tmpls)
 	}
 
+	out := os.Stdout
+	if config.OutputDir != "" && config.OutputDir != "-" {
+		out, err = os.Create(fmt.Sprintf("%s/main.cfg", config.OutputDir))
+		defer out.Close()
+	}
+
 	t := tmpls.Lookup("main")
-	err = t.Execute(os.Stdout, struct {
+	err = t.Execute(out, struct {
 		F5config f5.F5Config
 		Config   Config
 	}{
@@ -80,6 +86,7 @@ func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 			f5c.LtmVirtual = f5config.LtmVirtual
 		case "pool":
 			f5c.LtmPool = f5config.LtmPool
+			f5c.LtmNode = f5config.LtmNode
 		case "rule":
 			f5c.LtmRule = f5config.LtmRule
 		case "profile":

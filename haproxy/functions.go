@@ -9,16 +9,16 @@ import (
 	"github.com/Masterminds/sprig"
 )
 
-func comment(str string, indent int) string {
-	return spacedComment(str, 1, indent)
+func comment(str string, indent int, comment string) string {
+	return spacedComment(str, 1, indent, comment)
 }
 
-func spacedComment(str string, space, indent int) string {
+func spacedComment(str string, space, indent int, comment string) string {
 	idstr := strings.Repeat(" ", indent)
 	spstr := strings.Repeat(" ", space)
 	lines := strings.Split(str, "\n")
 	for i, line := range lines {
-		lines[i] = idstr + "#" + spstr + line
+		lines[i] = idstr + comment + spstr + line
 	}
 	return strings.Join(lines, "\n")
 }
@@ -80,7 +80,7 @@ func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 			}
 			t := tmpls.Lookup(name)
 			if t == nil {
-				return "", err
+				return fmt.Sprintf("%s### Template %s not found", strings.Repeat(" ", level), name), err
 			}
 
 			buf := &bytes.Buffer{}
