@@ -19,7 +19,7 @@ type ParsedConfig struct {
 	// Original block content
 	Content string
 	// Begin and end lines of block in File
-	Lines [2]int
+	Lines [3]int
 	// File where block is defined
 	File string
 }
@@ -188,7 +188,7 @@ func parseLines(file, content string) (pc []ParsedConfig, err error) {
 				//
 				// 102 = 101 + 1 (last line)
 				// 100 = 101 + 1 - ( 3 - 1)  = 101 - 3 + 2 = 100 (first line)
-				Lines: [2]int{i - l + 2, i + 1},
+				Lines: [3]int{i - l + 2, i + 1, l},
 			})
 			retCur += 1
 			tmp = tmp[:0]

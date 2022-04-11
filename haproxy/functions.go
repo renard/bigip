@@ -9,6 +9,13 @@ import (
 	"github.com/Masterminds/sprig"
 )
 
+func add(a, b int) int {
+	return a + b
+}
+func sub(a, b int) int {
+	return a - b
+}
+
 func comment(str string, indent int, comment string) string {
 	return spacedComment(str, 1, indent, comment)
 }
@@ -50,6 +57,8 @@ func ipport(str string) string {
 func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 	tmpls = template.New("")
 	funcs := template.FuncMap{
+		"add":       add,
+		"sub":       sub,
 		"comment":   comment,
 		"scomment":  spacedComment,
 		"indent":    indent,
