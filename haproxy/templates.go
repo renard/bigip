@@ -24,6 +24,7 @@ type Config struct {
 	Export          []string
 	OutputDir       string
 	ExpandTemplates bool
+	Virtual         []string
 }
 
 func addExtraTemplates(t *template.Template, dir string) (err error) {
@@ -56,11 +57,35 @@ func Render(config *Config, f5config f5.F5Config) (err error) {
 	}
 
 	t := tmpls.Lookup("main")
+
+	f5c := f5.NewF5Config()
+	if len(config.Virtual) == 0 {
+		f5c.LtmVirtual = f5config.LtmVirtual
+		f5c.LtmPool = f5config.LtmPool
+	} else {
+		// Limit to provided virtual only
+		for _, virtual := range config.Virtual {
+			if v, ok := f5config.LtmVirtual[virtual]; ok {
+				f5c.LtmVirtual[virtual] = v
+				// Only keep pools used by selected virtual
+				pool := v.(*f5.LtmVirtual).Pool
+				if p, pok := f5config.LtmPool[pool]; pok {
+					f5c.LtmPool[pool] = p
+				}
+			}
+		}
+	}
+	f5c.LtmNode = f5config.LtmNode
+	f5c.LtmRule = f5config.LtmRule
+	f5c.LtmProfile = f5config.LtmProfile
+	f5c.LtmMonitor = f5config.LtmMonitor
+	f5c.LtmPersistence = f5config.LtmPersistence
+
 	err = t.Execute(out, struct {
 		F5config f5.F5Config
 		Config   Config
 	}{
-		F5config: f5config,
+		F5config: f5c,
 		Config:   *config,
 	})
 	return
