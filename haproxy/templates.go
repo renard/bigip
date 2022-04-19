@@ -29,7 +29,7 @@ type Config struct {
 
 func addExtraTemplates(t *template.Template, dir string) (err error) {
 	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if strings.Contains(path, ".cfg") {
+		if strings.HasSuffix(path, ".tpl.cfg") {
 			_, err = t.ParseFiles(path)
 			if err != nil {
 				repr.Println(err)
@@ -124,7 +124,7 @@ func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 			f5c.LtmPersistence = f5config.LtmPersistence
 		}
 
-		fh, e := os.Create(fmt.Sprintf("%s/%s.cfg", config.OutputDir, tp))
+		fh, e := os.Create(fmt.Sprintf("%s/%s.tpl.cfg", config.OutputDir, tp))
 		if e != nil {
 			return e
 		}

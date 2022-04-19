@@ -108,7 +108,7 @@ func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 	}
 	tmpls = tmpls.Funcs(sprig.TxtFuncMap())
 	tmpls = tmpls.Funcs(funcs)
-	tmpls, err = tmpls.ParseFS(tpl, "templates/*.cfg")
+	tmpls, err = tmpls.ParseFS(tpl, "templates/*.tpl.cfg")
 	if err != nil {
 		return
 	}
