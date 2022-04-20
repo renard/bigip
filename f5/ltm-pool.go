@@ -33,21 +33,22 @@ type LtmPool struct {
 }
 
 type LtmPoolMember struct {
-	Name            string       `@(F5Name | QF5Name | Ident) "{"`
-	Address         string       ` ( "address" @Ident`
-	AppService      string       ` | "app-service" @( "none" | QString | F5Name | QF5Name | Ident )`
-	ConnectionLimit int          ` | "connection-limit" @Ident`
-	Description     string       ` | "description" @( QString | Ident )`
-	DynamicRatio    int          ` | "dynamic-ratio" @Ident`
-	InheritProfile  *bool        ` | "inherit-profile" @("enabled" | "disabled")`
-	Logging         *bool        ` | "logging" @("enabled" | "disabled")`
-	Monitor         []string     ` | "monitor" ( ( "min" Ident "of" "{" @( F5Name | QF5Name ) ("and"? @(F5Name | QF5Name) )* "}" ) | @( "none" | F5Name | QF5Name | Ident) ("and"? @(F5Name | QF5Name | Ident) )* )`
-	PriorityGroup   string       ` | "priority-group" @( "none" | Ident )`
-	RateLimit       int          ` | "rate-limit" @Ident`
-	Ratio           int          ` | "ratio" @Ident`
-	Session         string       ` | "session" @( "user-enabled" | "user-disabled" | "user" "disabled" | "monitor-enabled")`
-	State           string       ` | "state" @( "user-up" | "user-down" | "down" | "up")`
-	FQDN            *LtmPoolFQDN ` | "fqdn" "{" @@ "}" )* "}"`
+	Name            string        `@(F5Name | QF5Name | Ident) "{"`
+	Address         string        ` ( "address" @Ident`
+	AppService      string        ` | "app-service" @( "none" | QString | F5Name | QF5Name | Ident )`
+	ConnectionLimit int           ` | "connection-limit" @Ident`
+	Description     string        ` | "description" @( QString | Ident )`
+	DynamicRatio    int           ` | "dynamic-ratio" @Ident`
+	InheritProfile  *bool         ` | "inherit-profile" @("enabled" | "disabled")`
+	Logging         *bool         ` | "logging" @("enabled" | "disabled")`
+	Metadata        []*F5Metadata ` | "metadata" "{" @@  "}"`
+	Monitor         []string      ` | "monitor" ( ( "min" Ident "of" "{" @( F5Name | QF5Name ) ("and"? @(F5Name | QF5Name) )* "}" ) | @( "none" | F5Name | QF5Name | Ident) ("and"? @(F5Name | QF5Name | Ident) )* )`
+	PriorityGroup   string        ` | "priority-group" @( "none" | Ident )`
+	RateLimit       int           ` | "rate-limit" @Ident`
+	Ratio           int           ` | "ratio" @Ident`
+	Session         string        ` | "session" @( "user-enabled" | "user-disabled" | "user" "disabled" | "monitor-enabled")`
+	State           string        ` | "state" @( "user-up" | "user-down" | "down" | "up")`
+	FQDN            *LtmPoolFQDN  ` | "fqdn" "{" @@ "}" )* "}"`
 }
 
 type LtmPoolFQDN struct {

@@ -40,7 +40,7 @@ type LtmVirtual struct {
 	Vlans                      []string                              ` | "vlans" "{" @(Ident | QF5Name | F5Name | QString)* "}"` // OLD Devices?
 	VlansEnabled               *bool                                 ` | @"vlans-enabled"`                                       // OLD Devices?
 	VsIndex                    int                                   ` | "vs-index" @Ident`                                      // OLD Devices?
-	Metadata                   []*LtmVirtualMetadata                 ` | "metadata" "{" @@* "}"`
+	Metadata                   []*F5Metadata                         ` | "metadata" "{" @@* "}"`
 	// Address         string          ` | "address" @Ident`
 	// ConnectionLimit int             ` | "connection-limit" @Ident`
 	// Status          string          ` | @( "up" | "down" )`
@@ -54,12 +54,6 @@ type LtmVirtual struct {
 	CreationTime     string ` | "creation-time" @F5Time`
 	LastModifiedTime string ` | "last-modified-time" @F5Time )* "}"`
 	// State string ` | @( "user-up" | "user-down" ) )* "}"`
-}
-
-type LtmVirtualMetadata struct {
-	Name    string `@( Ident | QF5Name | F5Name | QString ) "{"`
-	Value   string `(  "value" @( Ident | QF5Name | F5Name | QString )`
-	Persist string ` | "persist" @( "true" | "false" ) )* "}"`
 }
 
 type LtmVirtualPersist struct {
