@@ -41,6 +41,7 @@ type F5Config struct {
 	LtmPool        f5config
 	LtmVirtual     f5config
 	LtmRule        f5config
+	LtmPolicy      f5config
 	LtmProfile     f5config
 	LtmMonitor     f5config
 	LtmPersistence f5config
@@ -101,6 +102,7 @@ func NewF5Config() F5Config {
 		LtmVirtual:     f5config{},
 		LtmPool:        f5config{},
 		LtmRule:        f5config{},
+		LtmPolicy:      f5config{},
 		LtmProfile:     f5config{},
 		LtmMonitor:     f5config{},
 		LtmPersistence: f5config{},
@@ -255,6 +257,9 @@ func parseFile(file string) (cfg F5Config, err error) {
 		case o.MatchPrefix("ltm rule ", "rule "):
 			obj, e = newLtmRule(o)
 			dest = cfg.LtmRule
+		case o.MatchPrefix("ltm policy ", "policy "):
+			obj, e = newLtmPolicy(o)
+			dest = cfg.LtmPolicy
 		case o.MatchPrefix("ltm profile ", "profile "):
 			obj, e = newLtmProfile(o)
 			dest = cfg.LtmProfile

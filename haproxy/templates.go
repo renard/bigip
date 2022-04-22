@@ -113,7 +113,7 @@ func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 
 	exports := config.Export
 	if len(exports) == 0 {
-		exports = []string{"virtual", "pool", "rule", "profile", "node", "monitor",
+		exports = []string{"virtual", "pool", "rule", "policy", "profile", "node", "monitor",
 			"persistence"}
 	}
 	t := tmpls.Lookup("export")
@@ -127,6 +127,8 @@ func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 			f5c.LtmNode = f5config.LtmNode
 		case "rule":
 			f5c.LtmRule = f5config.LtmRule
+		case "policy":
+			f5c.LtmPolicy = f5config.LtmPolicy
 		case "profile":
 			f5c.LtmProfile = f5config.LtmProfile
 		case "node":
