@@ -25,6 +25,7 @@ type Config struct {
 	OutputDir       string
 	ExpandTemplates bool
 	Virtual         []string
+	Pool            []string
 }
 
 func addExtraTemplates(t *template.Template, dir string) (err error) {
@@ -67,10 +68,18 @@ func Render(config *Config, f5config f5.F5Config) (err error) {
 		for _, virtual := range config.Virtual {
 			if v, ok := f5config.LtmVirtual[virtual]; ok {
 				f5c.LtmVirtual[virtual] = v
+				defaultPool := v.(*f5.LtmVirtual).Pool
+
 				// Only keep pools used by selected virtual
-				pool := v.(*f5.LtmVirtual).Pool
-				if p, pok := f5config.LtmPool[pool]; pok {
-					f5c.LtmPool[pool] = p
+				if p, pok := f5config.LtmPool[defaultPool]; pok {
+					f5c.LtmPool[defaultPool] = p
+				}
+
+				// TODO: Add extra pools.
+				for _, pool := range config.Pool {
+					if p, pok := f5config.LtmPool[pool]; pok {
+						f5c.LtmPool[pool] = p
+					}
 				}
 			}
 		}
@@ -102,9 +111,13 @@ func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 		return
 	}
 
+	exports := config.Export
+	if len(exports) == 0 {
+		exports = []string{"virtual", "pool", "rule", "profile", "node", "monitor",
+			"persistence"}
+	}
 	t := tmpls.Lookup("export")
-	for _, tp := range []string{"virtual", "pool", "rule", "profile", "node", "monitor",
-		"persistence"} {
+	for _, tp := range exports {
 		f5c := f5.NewF5Config()
 		switch tp {
 		case "virtual":

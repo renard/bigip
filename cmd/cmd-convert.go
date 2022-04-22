@@ -11,6 +11,7 @@ type Convert struct {
 	Files     []string `arg help:"Configuration files" type:"string"`
 	OutputDir string   `short:"o" help:"Output directory" default:"-" type:"string"`
 	Virtual   []string `short:"V" help:"Limit conversion to specific virtuals" type:"string"`
+	Pool      []string `short:"P" help:"Add extra pools when virtual flag is used" type:"string"`
 }
 
 func (c *Convert) Run(clictx *CLIContext) (err error) {
@@ -22,6 +23,7 @@ func (c *Convert) Run(clictx *CLIContext) (err error) {
 		ExpandTemplates: true,
 		OutputDir:       c.OutputDir,
 		Virtual:         c.Virtual,
+		Pool:            c.Pool,
 	}
 
 	cfg, err := f5.ParseFile(c.Files)
