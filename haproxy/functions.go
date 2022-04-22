@@ -51,7 +51,10 @@ func stripport(str string) string {
 
 func ipport(str string) string {
 	strs := strings.Split(str, "/")
-	return strs[len(strs)-1]
+	ipport := strings.Split(strs[len(strs)-1], ":")
+	ipport[0] = strings.Split(ipport[0], "%")[0]
+
+	return strings.Join(ipport, ":")
 }
 
 func loadTemplates(config *Config) (tmpls *template.Template, err error) {
