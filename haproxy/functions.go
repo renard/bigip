@@ -57,6 +57,15 @@ func ipport(str string) string {
 	return strings.Join(ipport, ":")
 }
 
+func normalize(str string) string {
+	if str[0] == '/' {
+		str = str[1:]
+	}
+	str = strings.Replace(str, "/", "::", -1)
+	return str
+
+}
+
 func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 	tmpls = template.New("")
 	funcs := template.FuncMap{
@@ -68,6 +77,7 @@ func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 		"stripport": stripport,
 		"split":     split,
 		"ipport":    ipport,
+		"normalize": normalize,
 		// https://forum.golangbridge.org/t/template-check-if-block-is-defined/6928/2
 		"hasTemplate": func(name string) bool {
 			return tmpls.Lookup(name) != nil
