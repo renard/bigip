@@ -96,13 +96,30 @@ func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 
 			return buf.String(), nil
 		},
-		"templateIndent": func(level int, name string, pipeline interface{}) (string, error) {
-			if !config.ExpandTemplates && level > 0 {
+		"templateIndent": func(level int64, name string, pipeline interface{}) (string, error) {
+			if !config.ExpandTemplates && level != 0 {
 				return fmt.Sprintf(`{{   templateIndent %d "%s" "%s" }}`, level, name, pipeline), nil
+			} // else {
+			// 	fmt.Printf("expending %s: %t && %t, %i\n", name, !config.ExpandTemplates, level != 0, level)
+			// }
+
+			lvl := int(level)
+			if lvl < 0 {
+				lvl = 0
 			}
+
+			// Disabled template
+			switch p := pipeline.(type) {
+			case string:
+				if strings.HasPrefix(p, "disabled:") {
+					idstr := strings.Repeat(" ", lvl)
+					return fmt.Sprintf("%s# %s | %s", idstr, name, p), nil
+				}
+			}
+
 			t := tmpls.Lookup(name)
 			if t == nil {
-				return fmt.Sprintf("%s### Template %s not found", strings.Repeat(" ", level), name), err
+				return fmt.Sprintf("%s### Template %s not found", strings.Repeat(" ", lvl), name), err
 			}
 
 			buf := &bytes.Buffer{}
@@ -111,7 +128,7 @@ func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 				return "", err
 			}
 
-			idstr := strings.Repeat(" ", level)
+			idstr := strings.Repeat(" ", lvl)
 			lines := strings.Split(buf.String(), "\n")
 			for i, line := range lines {
 				lines[i] = idstr + line
