@@ -12,6 +12,7 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
+	github.com/jackdoe/go-pager v0.0.0-20200410205908-3cd8effcdd34 // indirect
 	github.com/mattn/go-isatty v0.0.14
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/rs/zerolog v1.26.0

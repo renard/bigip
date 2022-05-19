@@ -9,7 +9,7 @@ import (
 type Convert struct {
 	Templates []string `short:"t" help:"Custom template directory" type:"string"`
 	Files     []string `arg help:"Configuration files" type:"string"`
-	OutputDir string   `short:"o" help:"Output directory" default:"-" type:"string"`
+	OutputDir string   `short:"o" help:"Output directory" default:"" type:"string"`
 	Virtual   []string `short:"V" help:"Limit conversion to specific virtuals" type:"string"`
 	Pool      []string `short:"P" help:"Add extra pools when virtual flag is used" type:"string"`
 }

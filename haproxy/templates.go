@@ -3,6 +3,7 @@ package haproxy
 import (
 	"embed"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	"bigip/f5"
 
 	"github.com/alecthomas/repr"
+	"github.com/jackdoe/go-pager"
 )
 
 var (
@@ -42,6 +44,23 @@ func addExtraTemplates(t *template.Template, dir string) (err error) {
 }
 
 func Render(config *Config, f5config f5.F5Config) (err error) {
+	var out io.Writer
+	// Multiple ways to output converted file
+	switch config.OutputDir {
+	case "":
+		// pager
+		close := func() {}
+		out, close = pager.Pager("less", "more", "cat")
+		defer close()
+	case "-":
+		// stdout
+		out = os.Stdout
+	default:
+		// file
+		out, err = os.Create(fmt.Sprintf("%s/main.cfg", config.OutputDir))
+		defer out.(*os.File).Close()
+	}
+
 	tmpls, err := loadTemplates(config)
 	if err != nil {
 		return
@@ -49,12 +68,6 @@ func Render(config *Config, f5config f5.F5Config) (err error) {
 
 	if false {
 		repr.Println(tmpls)
-	}
-
-	out := os.Stdout
-	if config.OutputDir != "" && config.OutputDir != "-" {
-		out, err = os.Create(fmt.Sprintf("%s/main.cfg", config.OutputDir))
-		defer out.Close()
 	}
 
 	t := tmpls.Lookup("main")
