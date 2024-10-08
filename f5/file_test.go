@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2022-01-06
-// Last changed: 2023-07-22 02:57:27
+// Last changed: 2024-10-09 01:24:12
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -24,12 +24,15 @@ import (
 	"reflect"
 	"testing"
 
+	"bigip/internal/log"
+
 	"github.com/alecthomas/repr"
 )
 
 var (
 	//go:embed testdata/bigip-*.conf
 	testsF5config embed.FS
+	testLog       = log.New()
 )
 
 func TestMerge(t *testing.T) {
@@ -58,7 +61,7 @@ func TestMerge(t *testing.T) {
 func TestParse(t *testing.T) {
 	files := getFiles(testsF5config)
 	repr.Println(files)
-	cfg, err := ParseFile(files)
+	cfg, err := ParseFile(testLog, files)
 	if err != nil {
 		t.Errorf("Cannot parse files: %s", err)
 	}

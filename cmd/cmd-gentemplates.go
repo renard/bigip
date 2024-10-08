@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2022-01-04
-// Last changed: 2023-07-22 02:57:02
+// Last changed: 2024-10-09 01:07:45
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -22,7 +22,7 @@ package cmd
 import (
 	"bigip/f5"
 	"bigip/haproxy"
-	"bigip/internal/log"
+	//	"bigip/internal/log"
 )
 
 type GenTemplates struct {
@@ -34,8 +34,6 @@ type GenTemplates struct {
 }
 
 func (c *GenTemplates) Run(clictx *CLIContext) (err error) {
-	log.Debug("Parsing configuration files %#v", c.Files)
-
 	hap := &haproxy.Config{
 		TemplateDir:     c.Templates,
 		Export:          c.Export,
@@ -43,7 +41,7 @@ func (c *GenTemplates) Run(clictx *CLIContext) (err error) {
 		ExpandTemplates: c.ExpandTemplates,
 	}
 
-	cfg, err := f5.ParseFile(c.Files)
+	cfg, err := f5.ParseFile(clictx.log, c.Files)
 	if err != nil {
 		return
 	}

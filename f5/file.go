@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-19
-// Last changed: 2023-07-22 02:57:22
+// Last changed: 2024-10-09 01:27:38
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -24,6 +24,8 @@ import (
 	"io/ioutil"
 	"reflect"
 	"strings"
+
+	"bigip/internal/log"
 
 	"github.com/alecthomas/repr"
 )
@@ -131,9 +133,10 @@ func NewF5Config() F5Config {
 // countBraces counts the braces balance in a line.
 //
 // If return value is:
-//  0 the braces are balanced in the line.
-//  >0 there are more opening bbraces than closing
-//  <0 there are less opening bbraces than closing
+//
+//	0 the braces are balanced in the line.
+//	>0 there are more opening braces than closing
+//	<0 there are less opening braces than closing
 func countBraces(line string) (count int) {
 	count = 0
 	// simple_quote := false
@@ -156,24 +159,16 @@ func countBraces(line string) (count int) {
 	return
 }
 
-func parseLines(file, content string) (pc []ParsedConfig, err error) {
+func parseLines(l *log.Log, file, content string) (pc []ParsedConfig, err error) {
 	lines := strings.Split(content, "\n")
-	if false {
-		fmt.Printf("Need to process %d lines\n", len(lines))
-	}
+	l.Debug("Need to process %d lines", len(lines))
 	tmp := []string{}
 	processed := 0
 	opened := 0
 	retCur := 0
 	for i, line := range lines {
-		// fmt.Printf("%d\t%s\n", opened, line)
-		if false {
-			if strings.HasPrefix(line, "ltm ") && opened != 0 {
-				// fmt.Printf("Unbalanced braces line %d (offset: %d)\n", i, opened)
-				opened = 0
-			} else {
-				opened += countBraces(line)
-			}
+		if strings.HasPrefix(line, "ltm ") {
+			l.Trace("%.8d %.4d %s", i, opened, line)
 		}
 		opened += countBraces(line)
 		switch {
@@ -214,29 +209,30 @@ func parseLines(file, content string) (pc []ParsedConfig, err error) {
 			retCur += 1
 			tmp = tmp[:0]
 		case opened < 0:
-			fmt.Printf("Error line %d: opened braces: %d\n", i, opened)
+			l.Error("line %d: opened braces: %d", i, opened)
 			return
 		case opened > 0:
 			processed += 1
 			tmp = append(tmp, line)
 		}
 	}
-	if false {
-		fmt.Printf("Found %d blocks in %d lines\n", len(pc), processed)
-	}
+	l.Debug("Found %d blocks in %d lines", len(pc), processed)
 	return
 
 }
 
-func ParseFile(files []string) (cfg F5Config, err error) {
+func ParseFile(l *log.Log, files []string) (cfg F5Config, err error) {
 	cfg = NewF5Config()
 	for _, file := range files {
-		tmpCfg, e := parseFile(file)
+		l.Debug("Parsing %s", file)
+		tmpCfg, e := parseFile(l, file)
 		if e != nil {
+			l.Error("Error while parsing file %s: %s", file, e)
 			return NewF5Config(), e
 		}
 		err = cfg.Merge(tmpCfg)
 		if err != nil {
+			l.Error("Error while merging %s: %s", file, e)
 			return NewF5Config(), err
 		}
 	}
@@ -244,14 +240,14 @@ func ParseFile(files []string) (cfg F5Config, err error) {
 }
 
 // ParseFile read and split file.
-func parseFile(file string) (cfg F5Config, err error) {
+func parseFile(l *log.Log, file string) (cfg F5Config, err error) {
 
 	content, err := ioutil.ReadFile(file)
 	if err != nil {
 		return
 	}
 
-	pc, err := parseLines(file, string(content))
+	pc, err := parseLines(l, file, string(content))
 
 	cfg = NewF5Config()
 
@@ -290,7 +286,7 @@ func parseFile(file string) (cfg F5Config, err error) {
 			dest = cfg.LtmPersistence
 		}
 		if e != nil {
-			fmt.Printf("Err: %s: %s\n", strings.Split(o.Content, "\n")[0], e)
+			l.Error("%s: %s", strings.Split(o.Content, "\n")[0], e)
 			continue
 		}
 		if obj != nil {
@@ -299,13 +295,12 @@ func parseFile(file string) (cfg F5Config, err error) {
 		}
 	}
 
-	if false {
-		fmt.Printf("Parsed %d objects %d lines: %d nodes, %d pools, %d virtuals, %d rules, %d profiles\n",
-			len(pc), lines, len(cfg.LtmNode),
-			len(cfg.LtmPool), len(cfg.LtmVirtual),
-			len(cfg.LtmRule), len(cfg.LtmProfile),
-		)
-	}
+	l.Info("Parsed %d objects %d lines: %d nodes, %d pools, %d virtuals, %d rules, %d profiles",
+		len(pc), lines, len(cfg.LtmNode),
+		len(cfg.LtmPool), len(cfg.LtmVirtual),
+		len(cfg.LtmRule), len(cfg.LtmProfile),
+	)
+
 	if false {
 		repr.Println(cfg)
 	}

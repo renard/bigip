@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-19
-// Last changed: 2023-07-22 03:01:47
+// Last changed: 2024-10-09 01:15:25
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -20,7 +20,7 @@
 package log
 
 import (
-	"fmt"
+	//	"fmt"
 	"os"
 	"time"
 
@@ -28,63 +28,75 @@ import (
 	"github.com/rs/zerolog"
 )
 
-var log zerolog.Logger
+type Log struct {
+	log zerolog.Logger
+}
 
-func init() {
+func New() (ret *Log) {
+	ret = &Log{}
+
 	logWr := os.Stderr
 	isTerm := isatty.IsTerminal(logWr.Fd())
 
 	consoleWriter := zerolog.ConsoleWriter{
 		TimeFormat: time.RFC3339,
-		Out:        os.Stdout,
+		Out:        os.Stderr,
 		NoColor:    !isTerm}
-	log = zerolog.New(consoleWriter).With().Timestamp().Logger()
-	log = log.Level(zerolog.WarnLevel)
+	ret.log = zerolog.New(consoleWriter).With().Timestamp().Logger().Level(zerolog.WarnLevel)
+
+	return
 }
 
-func SetLevel(lvl int) {
+func (l *Log) SetLevel(lvl int) {
 	switch {
 	case lvl < 1:
 		return
 	case lvl == 1:
-		log = log.Level(zerolog.InfoLevel)
+		l.log = l.log.Level(zerolog.InfoLevel)
 	case lvl == 2:
-		log = log.Level(zerolog.DebugLevel)
+		l.log = l.log.Level(zerolog.DebugLevel)
 	case lvl > 2:
-		log = log.Level(zerolog.TraceLevel)
+		l.log = l.log.Level(zerolog.TraceLevel)
 	}
 }
 
-func Init(dir string) {
-	logWr := os.Stderr
-	isTerm := isatty.IsTerminal(logWr.Fd())
+// func Init(dir string) {
+// 	logWr := os.Stderr
+// 	isTerm := isatty.IsTerminal(logWr.Fd())
 
-	consoleWriter := zerolog.ConsoleWriter{
-		TimeFormat: time.RFC3339,
-		Out:        os.Stdout,
-		NoColor:    !isTerm}
+// 	consoleWriter := zerolog.ConsoleWriter{
+// 		TimeFormat: time.RFC3339,
+// 		Out:        os.Stderr,
+// 		NoColor:    !isTerm}
 
-	f, _ := os.Create(fmt.Sprintf("%s/app.log", dir))
+// 	f, _ := os.Create(fmt.Sprintf("%s/app.log", dir))
 
-	fileWriter := zerolog.ConsoleWriter{
-		TimeFormat: time.RFC3339,
-		Out:        f,
-		NoColor:    true}
+// 	fileWriter := zerolog.ConsoleWriter{
+// 		TimeFormat: time.RFC3339,
+// 		Out:        f,
+// 		NoColor:    true}
 
-	multi := zerolog.MultiLevelWriter(consoleWriter, fileWriter)
+// 	multi := zerolog.MultiLevelWriter(consoleWriter, fileWriter)
 
-	log = zerolog.New(multi).With().Timestamp().Logger()
+// 	log = zerolog.New(multi).With().Timestamp().Logger()
+// }
+
+func (l *Log) Trace(format string, v ...interface{}) {
+	l.log.Trace().Msgf(format, v...)
 }
 
-func Info(format string, v ...interface{}) {
-	log.Info().Msgf(format, v...)
+func (l *Log) Debug(format string, v ...interface{}) {
+	l.log.Debug().Msgf(format, v...)
 }
-func Debug(format string, v ...interface{}) {
-	log.Debug().Msgf(format, v...)
+
+func (l *Log) Info(format string, v ...interface{}) {
+	l.log.Info().Msgf(format, v...)
 }
-func Warn(format string, v ...interface{}) {
-	log.Warn().Msgf(format, v...)
+
+func (l *Log) Warn(format string, v ...interface{}) {
+	l.log.Warn().Msgf(format, v...)
 }
-func Error(format string, v ...interface{}) {
-	log.Error().Msgf(format, v...)
+
+func (l *Log) Error(format string, v ...interface{}) {
+	l.log.Error().Msgf(format, v...)
 }
