@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-19
-// Last changed: 2024-10-08 22:00:18
+// Last changed: 2024-10-11 01:16:53
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -40,6 +40,7 @@ type LtmVirtual struct {
 	Enabled                    string                                ` | @( "enabled" | "disabled" | "disable" )`
 	FallbackPersistence        string                                ` | "fallback-persistence" @( F5Name | QF5Name )`
 	IpProtocol                 string                                ` | ("ip-protocol" | "ip" "protocol") @( "any" | "udp" | "tcp" )`
+	IpForward                  *bool                                 ` | @"ip-forward"`
 	Mask                       string                                ` | "mask" @Ident`
 	Pool                       string                                ` | "pool" @( F5Name | QF5Name | Ident )`
 	Persist                    []*LtmVirtualPersist                  ` | "persist" "{" @@+ "}"`
