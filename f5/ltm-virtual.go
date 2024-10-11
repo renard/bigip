@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-19
-// Last changed: 2024-10-11 01:16:53
+// Last changed: 2024-10-11 21:21:01
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -20,6 +20,7 @@
 package f5
 
 import (
+	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
@@ -101,10 +102,16 @@ type LtmVirtualSourceAddressTranslation struct {
 	Type string ` | "type" @( "automap" | "lsn" | "snat" | "none" ))+`
 }
 
+var ltmVirtualParser = participle.MustBuild[LtmVirtual](
+	participle.Lexer(f5Lexer),
+	participle.Unquote("QF5Name"),
+	participle.Unquote("QString"),
+)
+
 // newLtmVirtual parses data and creates a new LtmVirtual struct.
 func newLtmVirtual(data ParsedConfig) (ret *LtmVirtual, err error) {
 	ret = &LtmVirtual{}
-	err = parseString("", data.Content, ret)
+	ret, err = ltmVirtualParser.ParseString("", data.Content)
 	ret.OriginalConfig = data
 	return
 }

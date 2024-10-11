@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-20
-// Last changed: 2023-07-22 02:58:02
+// Last changed: 2024-10-11 21:16:31
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -22,6 +22,7 @@ package f5
 import (
 	"strings"
 
+	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
@@ -33,11 +34,17 @@ type LtmPersistence struct {
 	Name           string `( @F5Name | @QF5Name ) "{"?`
 }
 
+var ltmPersistenceParser = participle.MustBuild[LtmPersistence](
+	participle.Lexer(f5Lexer),
+	participle.Unquote("QF5Name"),
+	participle.Unquote("QString"),
+)
+
 // newLtmPersistence parses data and creates a new LtmPersistence struct.
 func newLtmPersistence(data ParsedConfig) (ret *LtmPersistence, err error) {
 	ret = &LtmPersistence{}
 	profile := strings.Split(data.Content, "\n")
-	err = parseString("", profile[0], ret)
+	ret, err = ltmPersistenceParser.ParseString("", profile[0])
 	ret.OriginalConfig = data
 	return
 }

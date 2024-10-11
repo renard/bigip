@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-20
-// Last changed: 2023-07-22 02:58:45
+// Last changed: 2024-10-11 21:20:17
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -22,6 +22,7 @@ package f5
 import (
 	"strings"
 
+	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
@@ -32,11 +33,17 @@ type LtmRule struct {
 	Name           string `("ltm" "rule" @( F5Name | QF5Name ) | "rule" @( F5Name | QF5Name | Ident)) "{"?`
 }
 
+var ltmRuleParser = participle.MustBuild[LtmRule](
+	participle.Lexer(f5Lexer),
+	participle.Unquote("QF5Name"),
+	participle.Unquote("QString"),
+)
+
 // newLtmRule parses data and creates a new LtmRule struct.
 func newLtmRule(data ParsedConfig) (ret *LtmRule, err error) {
 	ret = &LtmRule{}
 	rule := strings.Split(data.Content, "\n")
-	err = parseString("", rule[0], ret)
+	ret, err = ltmRuleParser.ParseString("", rule[0])
 	ret.OriginalConfig = data
 	return
 }

@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-19
-// Last changed: 2023-07-22 02:58:22
+// Last changed: 2024-10-11 21:18:28
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -20,6 +20,7 @@
 package f5
 
 import (
+	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
@@ -75,10 +76,16 @@ type LtmPoolFQDN struct {
 	Name         string ` | "name" @Ident)*`
 }
 
+var ltmPoolParser = participle.MustBuild[LtmPool](
+	participle.Lexer(f5Lexer),
+	participle.Unquote("QF5Name"),
+	participle.Unquote("QString"),
+)
+
 // newLtmPool parses data and creates a new LtmPool struct.
 func newLtmPool(data ParsedConfig) (ret *LtmPool, err error) {
 	ret = &LtmPool{}
-	err = parseString("", data.Content, ret)
+	ret, err = ltmPoolParser.ParseString("", data.Content)
 	ret.OriginalConfig = data
 	return
 }

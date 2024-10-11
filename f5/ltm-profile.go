@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-20
-// Last changed: 2023-07-22 02:58:34
+// Last changed: 2024-10-11 21:19:18
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -22,6 +22,7 @@ package f5
 import (
 	"strings"
 
+	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
@@ -33,11 +34,17 @@ type LtmProfile struct {
 	Name           string `( @F5Name | @QF5Name ) "{"?`
 }
 
+var ltmProfileParser = participle.MustBuild[LtmProfile](
+	participle.Lexer(f5Lexer),
+	participle.Unquote("QF5Name"),
+	participle.Unquote("QString"),
+)
+
 // newLtmProfile parses data and creates a new LtmProfile struct.
 func newLtmProfile(data ParsedConfig) (ret *LtmProfile, err error) {
 	ret = &LtmProfile{}
 	profile := strings.Split(data.Content, "\n")
-	err = parseString("", profile[0], ret)
+	ret, err = ltmProfileParser.ParseString("", profile[0])
 	ret.OriginalConfig = data
 	return
 }

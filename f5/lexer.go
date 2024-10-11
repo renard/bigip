@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-19
-// Last changed: 2024-10-11 20:28:11
+// Last changed: 2024-10-11 21:23:36
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -20,41 +20,30 @@
 package f5
 
 import (
-	"github.com/alecthomas/participle/v2"
+	// "github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
 var (
 	f5Lexer = lexer.MustSimple(
-		[]lexer.Rule{
-			{"comment", `#[^\n]*`, nil},
-			{"whitespace", `\s+`, nil},
-			{"eol", `[\n\r]+`, nil},
-			{"Punct", `[{}]`, nil},
+		[]lexer.SimpleRule{
+			{"comment", `#[^\n]*`},
+			{"whitespace", `\s+`},
+			{"eol", `[\n\r]+`},
+			{"Punct", `[{}]`},
 			// Name definition
-			{"QF5Name", `"/[A-Za-z0-9/_. -]*[A-Za-z0-9/_%:]+"`, nil},
-			{"F5Name", `/[A-Za-z0-9/_.-]*[A-Za-z0-9/_%:]+`, nil},
-			{"F5Time", `\d{4}-\d{2}-\d{2}:\d{2}:\d{2}:\d{2}`, nil},
-			// {"F5IPCIDR", `\b[0-9a-fA-F\.:]+/[0-9]+\b`, nil},
-			// {"F5IP", `\b[0-9a-fA-F\.:]+\b`, nil},
+			{"QF5Name", `"/[A-Za-z0-9/_. -]*[A-Za-z0-9/_%:]+"`},
+			{"F5Name", `/[A-Za-z0-9/_.-]*[A-Za-z0-9/_%:]+`},
+			{"F5Time", `\d{4}-\d{2}-\d{2}:\d{2}:\d{2}:\d{2}`},
+			// {"F5IPCIDR", `\b[0-9a-fA-F\.:]+/[0-9]+\b`},
+			// {"F5IP", `\b[0-9a-fA-F\.:]+\b`},
 
-			{"F5lbMode", `dynamic-ratio-member|dynamic-ratio-node|fastest-app-response|fastest-node|least-connections-members?|least-connections-node|least-sessions|observed-member|observed-node|predictive-member|predictive-node|ratio-least-connections-member|ratio-least-connections-node|ratio-member|ratio-node|ratio-session|round-robin|weighted-least-connections-member|weighted-least-connections-node`, nil},
+			{"F5lbMode", `dynamic-ratio-member|dynamic-ratio-node|fastest-app-response|fastest-node|least-connections-members?|least-connections-node|least-sessions|observed-member|observed-node|predictive-member|predictive-node|ratio-least-connections-member|ratio-least-connections-node|ratio-member|ratio-node|ratio-session|round-robin|weighted-least-connections-member|weighted-least-connections-node`},
 			// Quoted string
-			{"QString", `".+"`, nil},
+			{"QString", `".+"`},
 
-			{"Ident", `[A-Za-z0-9._-][A-Za-z0-9._/:^%-]*`, nil},
+			{"Ident", `[A-Za-z0-9._-][A-Za-z0-9._/:^%-]*`},
 		},
-		lexer.MatchLongest(),
+		// lexer.MatchLongest(),
 	)
 )
-
-func parseString(name, data string, obj F5ltm) (err error) {
-	parser := participle.MustBuild(
-		obj,
-		participle.Lexer(f5Lexer),
-		participle.Unquote("QF5Name"),
-		participle.Unquote("QString"),
-	)
-	err = parser.ParseString(name, data, obj)
-	return
-}

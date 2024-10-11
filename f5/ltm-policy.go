@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2022-04-22
-// Last changed: 2023-07-22 02:58:11
+// Last changed: 2024-10-11 21:17:34
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -22,6 +22,7 @@ package f5
 import (
 	"strings"
 
+	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
@@ -32,11 +33,18 @@ type LtmPolicy struct {
 	Name           string `"ltm" "policy" ( @F5Name | @QF5Name ) "{"?`
 }
 
+var ltmPolicyParser = participle.MustBuild[LtmPolicy](
+	participle.Lexer(f5Lexer),
+	participle.Unquote("QF5Name"),
+	participle.Unquote("QString"),
+)
+
 // newLtmPolicy parses data and creates a new LtmPolicy struct.
 func newLtmPolicy(data ParsedConfig) (ret *LtmPolicy, err error) {
 	ret = &LtmPolicy{}
 	profile := strings.Split(data.Content, "\n")
-	err = parseString("", profile[0], ret)
+	// err = parseString("", profile[0], ret)
+	ret, err = ltmPolicyParser.ParseString("", profile[0])
 	ret.OriginalConfig = data
 	return
 }

@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2022-01-05
-// Last changed: 2023-07-22 02:57:40
+// Last changed: 2024-10-11 21:12:42
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -22,6 +22,7 @@ package f5
 import (
 	"strings"
 
+	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
@@ -75,12 +76,18 @@ type LtmMonitor struct {
 	// Username                  string  ` | "username" @( Ident | F5Name | QF5Name ) )* "}"`
 }
 
+var ltmMonitorParser = participle.MustBuild[LtmMonitor](
+	participle.Lexer(f5Lexer),
+	participle.Unquote("QF5Name"),
+	participle.Unquote("QString"),
+)
+
 // newLtmMonitor parses data and creates a new LtmMonitor struct.
 func newLtmMonitor(data ParsedConfig) (ret *LtmMonitor, err error) {
 	ret = &LtmMonitor{}
 	// Only analyze first line
 	monitor := strings.Split(data.Content, "\n")
-	err = parseString("", monitor[0], ret)
+	ret, err = ltmMonitorParser.ParseString("", monitor[0])
 	ret.OriginalConfig = data
 	return
 }
