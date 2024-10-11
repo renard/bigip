@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-19
-// Last changed: 2023-07-22 02:57:33
+// Last changed: 2024-10-11 20:28:11
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -48,7 +48,7 @@ var (
 	)
 )
 
-func parseString(name, data string, obj interface{}) (err error) {
+func parseString(name, data string, obj F5ltm) (err error) {
 	parser := participle.MustBuild(
 		obj,
 		participle.Lexer(f5Lexer),

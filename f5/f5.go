@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2022-04-20
-// Last changed: 2023-07-22 02:57:17
+// Last changed: 2024-10-11 20:27:42
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -23,4 +23,9 @@ type F5Metadata struct {
 	Name    string `@( Ident | QF5Name | F5Name | QString ) "{"`
 	Value   string `(  "value" @( Ident | QF5Name | F5Name | QString )`
 	Persist string ` | "persist" @( "true" | "false" ) )* "}"`
+}
+
+type F5ltm interface {
+	Original() string
+	GetName() string
 }
