@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-19
-// Last changed: 2023-07-22 02:59:24
+// Last changed: 2024-10-29 11:46:18
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -29,6 +29,7 @@ import (
 	"text/template"
 
 	"bigip/f5"
+	"bigip/internal/log"
 
 	"github.com/alecthomas/repr"
 	"github.com/jackdoe/go-pager"
@@ -47,6 +48,7 @@ type Config struct {
 	ExpandTemplates bool
 	Virtual         []string
 	Pool            []string
+	Log             *log.Log
 }
 
 func addExtraTemplates(t *template.Template, dir string) (err error) {

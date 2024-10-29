@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-31
-// Last changed: 2024-10-10 09:07:56
+// Last changed: 2024-10-29 11:49:09
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -139,6 +139,7 @@ func loadTemplates(config *Config) (tmpls *template.Template, err error) {
 
 			t := tmpls.Lookup(name)
 			if t == nil {
+				config.Log.Error("Template %s not found", name)
 				return fmt.Sprintf("%s### Template %s not found", strings.Repeat(" ", lvl), name), err
 			}
 
