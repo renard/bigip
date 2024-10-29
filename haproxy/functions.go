@@ -1,7 +1,7 @@
 // Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-31
-// Last changed: 2023-07-22 02:59:18
+// Last changed: 2024-10-10 09:07:56
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Affero General Public License
@@ -81,6 +81,7 @@ func normalize(str string) string {
 		str = str[1:]
 	}
 	str = strings.Replace(str, "/", "::", -1)
+	str = strings.Replace(str, " ", "_", -1)
 	return str
 
 }
