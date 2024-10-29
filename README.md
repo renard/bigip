@@ -270,6 +270,11 @@ defaults
 haproxy -c -- default.cfg generated-config.cfg
 ```
 
+- check F5 ltm documentation: https://clouddocs.f5.com/cli/tmsh-reference/v16/modules/ltm/
+
+- Check HAProxy documentation: https://docs.haproxy.org/
+
+
 ## License
 
 Copyright 2021-2024 (c) Sébastien Gross.
